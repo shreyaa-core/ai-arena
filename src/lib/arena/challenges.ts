@@ -402,7 +402,7 @@ export const CHALLENGES: Challenge[] = [
     hints: ["Use what's unique: own roasting, open late, students.", "Short, concrete, sensory words beat superlatives."],
     requirements: ["Three distinct taglines", "Use specific details", "Explain your reasoning"],
     payload: {
-      kind: "improve-output",
+      kind: "text",
       source: {
         label: "AI output",
         text: "1. The best coffee in town.\n2. Quality coffee for everyone.\n3. Your favourite place for coffee and more!",

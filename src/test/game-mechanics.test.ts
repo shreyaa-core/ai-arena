@@ -47,6 +47,14 @@ describe("AI Arena game mechanics", () => {
     const preview = simulatePromptOutput(ch, "write something about our product launch");
     expect(preview.estimatedQuality).toBeLessThan(30);
     expect(preview.failureModes.length).toBeGreaterThan(0);
+
+    const imgCh = challengeById("recreate-orbital-beacon")!;
+    const imgGood = simulatePromptOutput(
+      imgCh,
+      "Stylized sci-fi vector illustration in isometric three-quarter view of an orbital research station with solar arrays floating above a glowing cyan crescent planet horizon in deep indigo space, warm amber windows, no text or watermarks.",
+    );
+    expect(imgGood.estimatedQuality).toBeGreaterThanOrEqual(85);
+    expect(imgGood.simulatedOutput).toContain("Image Generator");
   });
 
   it("computes player stats, rank progression, and badges across domains", () => {

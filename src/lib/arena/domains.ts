@@ -15,6 +15,7 @@ export const DIFFICULTIES: Difficulty[] = ["Beginner", "Intermediate", "Advanced
 
 export const TYPE_LABEL: Record<ChallengeType, string> = {
   "prompt-write": "Write a prompt",
+  "image-prompt": "Recreate an image",
   "spot-flaws": "Spot the flaws",
   "best-response": "Choose best response",
   "workflow-design": "Design a workflow",

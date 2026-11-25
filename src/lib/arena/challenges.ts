@@ -525,6 +525,151 @@ export const CHALLENGES: Challenge[] = [
       ],
     },
   },
+  {
+    id: "recreate-orbital-beacon",
+    title: "Recreate the orbital observatory",
+    domain: "prompt",
+    difficulty: "Beginner",
+    minutes: 6,
+    type: "image-prompt",
+    summary: "Study the reference illustration and write an image-generation prompt to recreate it accurately.",
+    scenario:
+      "You want an AI image generator to reproduce the exact target illustration shown here for a mission briefing slide — without burning multiple re-rolls.",
+    task: "Inspect the target image and write one concise prompt covering subject, setting, composition/angle, lighting/colors, style, and what to exclude.",
+    hints: [
+      "Name the main subject (orbital research station with solar arrays) and what sits behind it (crescent planet in deep space).",
+      "Specify the camera view (isometric or three-quarter view), colors (cyan horizon, amber windows, indigo space), and illustration style.",
+      "Exclude unwanted artifacts like text, letters, or watermarks.",
+    ],
+    requirements: [
+      "Describes the orbital station and solar panels",
+      "Places the crescent planet in deep indigo space",
+      "Specifies isometric / three-quarter framing and cyan/amber lighting",
+      "States stylized vector/illustration style and no-text exclusion",
+    ],
+    payload: {
+      kind: "text",
+      referenceImage: {
+        src: "/missions/orbital-observatory.jpg",
+        alt: "Retro-futuristic orbital research station floating above a glowing cyan crescent planet in deep indigo space",
+        caption: "Target reference — recreate this composition, lighting, and style in one prompt",
+      },
+      placeholder: "Stylized sci-fi illustration of an orbital research station…",
+      minWords: 30,
+      rubric: [
+        {
+          criterion: "relevance",
+          weight: 30,
+          need: 2,
+          signals: [
+            { re: "station|observatory|satellite|outpost", label: "Names the orbital station", tip: "Describe the orbital research station / observatory." },
+            { re: "solar|array|panel|wing", label: "Includes solar arrays", tip: "Mention the solar arrays / panels on the station." },
+            { re: "planet|crescent|horizon|orbit|space", label: "Includes the crescent planet & space", tip: "Include the glowing crescent planet below in deep space." },
+          ],
+        },
+        {
+          criterion: "clarity",
+          weight: 25,
+          need: 2,
+          signals: [
+            { re: "isometric|three-?quarter|3/4|angled|wide|floating above", label: "Defines angle & framing", tip: "Specify the isometric or three-quarter angle." },
+            { re: "illustration|vector|stylized|painted|book.?cover|retro-?futuristic|sci-?fi art", label: "Defines art style", tip: "Name the stylized sci-fi illustration / vector style." },
+          ],
+        },
+        {
+          criterion: "specificity",
+          weight: 25,
+          need: 2,
+          signals: [
+            { re: "cyan|teal|aqua|blue glow", label: "Specifies cyan horizon glow", tip: "Mention the glowing cyan-blue planet horizon." },
+            { re: "amber|warm|orange|yellow window|lit window", label: "Specifies amber windows", tip: "Mention the warm amber-lit observatory windows." },
+            { re: "indigo|deep blue|dark space|purple-?black", label: "Specifies deep indigo backdrop", tip: "Describe the deep indigo space backdrop." },
+          ],
+        },
+        {
+          criterion: "safety",
+          weight: 20,
+          need: 1,
+          signals: [
+            { re: "no text|without text|no letters|no watermark|no logo|clean", label: "Excludes text & watermarks", tip: "Add a negative constraint such as 'no text, no letters, no watermark'." },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    id: "recreate-neon-botanical",
+    title: "Recreate the glasshouse specimen",
+    domain: "prompt",
+    difficulty: "Intermediate",
+    minutes: 8,
+    type: "image-prompt",
+    summary: "Reverse-engineer a moody studio macro photograph into a sharp, reproducible image prompt.",
+    scenario:
+      "Your design team needs another asset matching the visual style of this reference render. Instead of guessing through five generations, capture every visual cue in one prompt.",
+    task: "Write a prompt that reproduces the subject, container, surface, lighting, depth of field, and photorealistic style of the target image.",
+    hints: [
+      "Identify both the plant (bioluminescent fern) and its enclosure (octagonal brass-and-glass terrarium on a dark slate bench).",
+      "Describe the lighting and lens: cyan and violet volumetric glow, rim lighting, macro close-up with shallow depth of field.",
+      "State photorealistic studio render and forbid text or logos.",
+    ],
+    requirements: [
+      "Names the bioluminescent fern and brass/glass terrarium",
+      "Specifies dark slate bench setting",
+      "Specifies macro close-up and shallow depth of field",
+      "Captures cyan/violet glow, rim lighting, and no-text constraint",
+    ],
+    payload: {
+      kind: "text",
+      referenceImage: {
+        src: "/missions/bioluminescent-terrarium.jpg",
+        alt: "Bioluminescent cyan and violet fern inside an octagonal brass-and-glass terrarium on a dark slate bench",
+        caption: "Target reference — reverse-engineer the lens, lighting, materials, and subject",
+      },
+      placeholder: "Photorealistic macro studio photo of a bioluminescent fern…",
+      minWords: 35,
+      rubric: [
+        {
+          criterion: "relevance",
+          weight: 25,
+          need: 2,
+          signals: [
+            { re: "fern|plant|specimen|botanical|leaf|leaves", label: "Identifies the fern specimen", tip: "Name the glowing fern / botanical specimen." },
+            { re: "terrarium|glass|brass|octagonal|enclosure|case", label: "Describes the brass-and-glass terrarium", tip: "Describe the brass-and-glass terrarium." },
+            { re: "slate|bench|table|lab|dark surface", label: "Sets the dark slate surface", tip: "Place it on a dark slate lab bench or dark surface." },
+          ],
+        },
+        {
+          criterion: "clarity",
+          weight: 25,
+          need: 2,
+          signals: [
+            { re: "macro|close-?up|shallow depth|bokeh|blurred background", label: "Specifies macro & depth of field", tip: "Specify macro close-up and shallow depth of field." },
+            { re: "photorealistic|studio photo|photograph|3d render|product render", label: "Defines photorealistic style", tip: "Specify a photorealistic studio photograph style." },
+          ],
+        },
+        {
+          criterion: "specificity",
+          weight: 30,
+          need: 2,
+          signals: [
+            { re: "bioluminescen|glow|luminous|volumetric", label: "Describes bioluminescent glow", tip: "Describe the soft bioluminescent / volumetric glow." },
+            { re: "cyan|teal|blue", label: "Includes cyan glow", tip: "Include the cyan glow color." },
+            { re: "violet|purple|magenta", label: "Includes violet accent", tip: "Include the violet glow accent." },
+            { re: "rim light|edge light|moody lighting|studio light", label: "Specifies rim/studio lighting", tip: "Mention crisp rim lighting on the glass and brass." },
+          ],
+        },
+        {
+          criterion: "safety",
+          weight: 20,
+          need: 1,
+          signals: [
+            { re: "no text|without text|no logo|no watermark|no label", label: "Excludes text & logos", tip: "Explicitly exclude text, logos, and watermarks." },
+          ],
+        },
+      ],
+    },
+  },
 ];
 
 export const challengeById = (id: string) => CHALLENGES.find((c) => c.id === id);

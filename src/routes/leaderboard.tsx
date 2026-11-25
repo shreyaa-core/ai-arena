@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Medal, Play } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { CHALLENGES } from "@/lib/arena/challenges";
 import { buildLeaderboard, type LeaderboardSort } from "@/lib/arena/leaderboard";
 import { useArenaState } from "@/lib/arena/storage";
 import { cn } from "@/lib/utils";
@@ -103,7 +104,9 @@ function LeaderboardPage() {
                   {row.efficiency}%
                 </td>
                 <td className="px-4 py-3 text-right font-mono text-nebula tabular">{row.xp}</td>
-                <td className="px-4 py-3 text-right font-mono tabular">{row.cleared}/12</td>
+                <td className="px-4 py-3 text-right font-mono tabular">
+                  {row.cleared}/{CHALLENGES.length}
+                </td>
                 <td className="hidden px-4 py-3 text-right font-mono tabular sm:table-cell">
                   {row.bestStreak}x
                 </td>

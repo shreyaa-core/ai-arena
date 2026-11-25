@@ -42,8 +42,8 @@ function Index() {
 
   const featured = [
     "brief-research-assistant",
+    "recreate-orbital-beacon",
     "spot-hallucinations-python",
-    "support-triage-pipeline",
     "deployment-risk-triage",
   ]
     .map((id) => challengeById(id))
@@ -59,8 +59,9 @@ function Index() {
               Measure how efficiently you work with AI
             </h1>
             <p className="mt-4 max-w-lg text-base leading-relaxed text-muted-foreground">
-              Twelve timed missions across prompting, verification, workflows, and risk triage —
-              scored on output quality, par speed, turn economy, and hint independence.
+              {CHALLENGES.length} timed missions across text &amp; visual prompting, verification,
+              workflows, and risk triage — scored on output quality, par speed, turn economy, and
+              hint independence.
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-3">

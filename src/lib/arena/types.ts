@@ -2,6 +2,7 @@ export type DomainId = "prompt" | "evaluation" | "tools" | "workflow" | "respons
 export type Difficulty = "Beginner" | "Intermediate" | "Advanced";
 export type ChallengeType =
   | "prompt-write"
+  | "image-prompt"
   | "spot-flaws"
   | "best-response"
   | "workflow-design"
@@ -29,6 +30,7 @@ export interface TextPayload {
   kind: "text";
   starter?: string;
   source?: { label: string; text: string };
+  referenceImage?: { src: string; alt: string; caption?: string } | undefined;
   placeholder: string;
   minWords: number;
   rubric: TextCriterion[];

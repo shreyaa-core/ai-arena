@@ -94,6 +94,7 @@ export function ChallengeRunner({
   const [hintsShown, setHintsShown] = useState(0);
   const [turnsUsed, setTurnsUsed] = useState(0);
   const [simulation, setSimulation] = useState<SimulationPreview | null>(null);
+  const [zoomImage, setZoomImage] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [outcome, setOutcome] = useState<{
     evaluation: EvaluationResult;
@@ -107,6 +108,7 @@ export function ChallengeRunner({
     setHintsShown(0);
     setTurnsUsed(0);
     setSimulation(null);
+    setZoomImage(false);
     setOutcome(null);
   }, [challenge]);
 
@@ -240,6 +242,37 @@ export function ChallengeRunner({
         <div className="grid gap-6 lg:grid-cols-12">
           {/* Left Mission Briefing */}
           <aside className="space-y-4 lg:col-span-5">
+            {challenge.payload.kind === "text" && challenge.payload.referenceImage && (
+              <div className="overflow-hidden rounded-xl border border-highlight/40 bg-card">
+                <div className="flex items-center justify-between border-b border-border px-4 py-2.5 text-xs">
+                  <span className="font-mono text-highlight">Target image reference</span>
+                  <button
+                    type="button"
+                    onClick={() => setZoomImage((z) => !z)}
+                    className="font-mono text-muted-foreground hover:text-foreground"
+                  >
+                    {zoomImage ? "Compact view" : "Expand"}
+                  </button>
+                </div>
+                <div className="bg-background/80 p-3">
+                  <img
+                    src={challenge.payload.referenceImage.src}
+                    alt={challenge.payload.referenceImage.alt}
+                    onClick={() => setZoomImage((z) => !z)}
+                    className={cn(
+                      "w-full cursor-pointer rounded-lg border border-border object-cover transition-[max-height] duration-200",
+                      zoomImage ? "max-h-[520px]" : "aspect-[4/3] max-h-64",
+                    )}
+                  />
+                  {challenge.payload.referenceImage.caption && (
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      {challenge.payload.referenceImage.caption}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
             <div className="rounded-xl border border-border bg-card p-5">
               <h1 className="text-xl font-medium">{challenge.title}</h1>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
@@ -321,7 +354,9 @@ export function ChallengeRunner({
                 <div>
                   <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
                     <label htmlFor="prompt-editor" className="text-sm font-medium">
-                      Your prompt or edited output
+                      {challenge.payload.referenceImage
+                        ? "Your image-generation prompt"
+                        : "Your prompt or edited output"}
                     </label>
                     <div className="flex items-center gap-3 font-mono text-xs text-muted-foreground tabular">
                       <span>

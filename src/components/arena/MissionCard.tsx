@@ -93,6 +93,17 @@ export function MissionCard({
         <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
           {challenge.summary}
         </p>
+
+        {challenge.payload.kind === "text" && challenge.payload.referenceImage && (
+          <div className="mt-3 overflow-hidden rounded-lg border border-border bg-background/60">
+            <img
+              src={challenge.payload.referenceImage.src}
+              alt={challenge.payload.referenceImage.alt}
+              className="h-32 w-full object-cover"
+              loading="lazy"
+            />
+          </div>
+        )}
       </div>
 
       <div className="mt-5 flex items-center justify-between gap-3 border-t border-border pt-3.5">

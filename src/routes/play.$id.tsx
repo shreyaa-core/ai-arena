@@ -27,7 +27,7 @@ function PlayMissionPage() {
   if (!challenge) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-20 text-center">
-        <h1 className="text-2xl font-bold">Mission not found</h1>
+        <h1 className="text-2xl font-medium">Mission not found</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           That mission ID does not exist in the AI Arena catalog.
         </p>

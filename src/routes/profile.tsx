@@ -161,7 +161,10 @@ function ProfilePage() {
               <ResponsiveContainer width="100%" height="100%">
                 <RadarChart data={radarData}>
                   <PolarGrid stroke="rgba(238,240,245,0.1)" />
-                  <PolarAngleAxis dataKey="domain" tick={{ fill: "#a3a9b8", fontSize: 12 }} />
+                  <PolarAngleAxis
+                    dataKey="domain"
+                    tick={{ fill: "#a3a9b8", fontSize: 12, fontFamily: "Roboto, sans-serif" }}
+                  />
                   <PolarRadiusAxis domain={[0, 100]} tick={false} axisLine={false} />
                   <Radar
                     name="Efficiency"

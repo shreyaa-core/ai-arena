@@ -97,6 +97,7 @@
   }
   html {
     color-scheme: dark;
+    font-family: var(--font-sans);
   }
   body {
     background-color: var(--color-background);
@@ -104,6 +105,12 @@
     font-family: var(--font-sans);
     font-weight: 400;
     -webkit-font-smoothing: antialiased;
+  }
+  button,
+  input,
+  textarea,
+  select {
+    font-family: inherit;
   }
   h1,
   h2,

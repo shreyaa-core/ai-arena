@@ -8,25 +8,25 @@ import type { Challenge, Difficulty, Grade, Submission } from "@/lib/arena/types
 import { cn } from "@/lib/utils";
 
 const DIFF_DOT: Record<Difficulty, string> = {
-  Beginner: "bg-emerald-600",
-  Intermediate: "bg-amber-600",
-  Advanced: "bg-rose-600",
+  Beginner: "bg-[#00b8c4]",
+  Intermediate: "bg-[#d99b00]",
+  Advanced: "bg-[#FF006E]",
 };
 
 const GRADE_STYLE_DARK: Record<Grade, string> = {
-  S: "border-primary/40 bg-primary/15 text-primary",
-  A: "border-success/40 bg-success/15 text-success",
-  B: "border-border bg-secondary text-foreground",
-  C: "border-warning/40 bg-warning/15 text-warning",
-  D: "border-destructive/40 bg-destructive/15 text-destructive",
+  S: "border-highlight/60 bg-highlight/15 text-highlight",
+  A: "border-success/60 bg-success/15 text-success",
+  B: "border-arcade-purple/70 bg-arcade-purple/25 text-foreground",
+  C: "border-warning/60 bg-warning/15 text-warning",
+  D: "border-primary/60 bg-primary/20 text-primary",
 };
 
 const GRADE_STYLE_PAPER: Record<Grade, string> = {
-  S: "border-blue-300 bg-blue-50 text-blue-800",
-  A: "border-emerald-300 bg-emerald-50 text-emerald-800",
-  B: "border-slate-300 bg-slate-100 text-slate-800",
-  C: "border-amber-300 bg-amber-50 text-amber-800",
-  D: "border-rose-300 bg-rose-50 text-rose-800",
+  S: "border-cyan-500 bg-cyan-50 text-cyan-900",
+  A: "border-emerald-500 bg-emerald-50 text-emerald-900",
+  B: "border-purple-400 bg-purple-50 text-purple-900",
+  C: "border-amber-500 bg-amber-50 text-amber-900",
+  D: "border-rose-500 bg-rose-50 text-rose-900",
 };
 
 export function GradeBadge({
@@ -42,7 +42,7 @@ export function GradeBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center justify-center rounded-md border font-mono font-medium tabular",
+        "inline-flex items-center justify-center rounded-md border font-mono font-semibold tabular",
         styles[grade],
         size === "lg" ? "h-12 w-12 text-xl" : "h-7 w-7 text-xs",
       )}
@@ -66,12 +66,12 @@ export function MissionCard({
   const grade = bestSubmission ? (bestSubmission.grade ?? gradeFromScore(eff!)) : null;
 
   return (
-    <article className="flex flex-col justify-between rounded-xl border border-paper-border bg-paper p-5 text-paper-foreground shadow-[0_1px_2px_rgba(0,0,0,0.05)] transition-[border-color,box-shadow] duration-150 hover:shadow-[0_6px_20px_rgba(0,0,0,0.08)]">
+    <article className="flex flex-col justify-between rounded-xl border border-paper-border bg-paper p-5 text-paper-foreground shadow-[0_2px_10px_rgba(13,2,33,0.22)] transition-[border-color,box-shadow] duration-150 hover:border-arcade-purple/60 hover:shadow-[0_6px_24px_rgba(131,56,236,0.2)]">
       <div>
         <div className="flex items-start justify-between gap-2">
           <div className="flex flex-wrap items-center gap-2 text-xs text-paper-muted-foreground">
             <span className="tag border-paper-border bg-paper-muted text-paper-foreground">
-              <domain.icon className="h-3.5 w-3.5 text-paper-muted-foreground" strokeWidth={1.5} aria-hidden />
+              <domain.icon className="h-3.5 w-3.5 text-arcade-purple" strokeWidth={1.5} aria-hidden />
               {domain.label}
             </span>
             <span className="tag border-paper-border bg-white text-paper-foreground">
@@ -90,7 +90,7 @@ export function MissionCard({
             aria-label={isSaved ? "Remove bookmark" : "Bookmark mission"}
             className={cn(
               "rounded-md p-1.5 transition-colors duration-150 hover:bg-paper-muted",
-              isSaved ? "text-blue-700" : "text-paper-muted-foreground",
+              isSaved ? "text-primary" : "text-paper-muted-foreground",
             )}
           >
             <Bookmark className="h-4 w-4" strokeWidth={1.5} fill={isSaved ? "currentColor" : "none"} />

@@ -80,17 +80,17 @@ function Index() {
           </div>
 
           {/* Product Moment: Live Benchmark Console */}
-          <div className="rounded-2xl border border-border bg-card p-3 lg:col-span-6">
-            <div className="rounded-lg border border-border bg-background p-4">
+          <div className="rounded-2xl border border-arcade-purple/45 bg-card p-3 shadow-[0_12px_40px_-12px_oklch(0.555_0.245_293/0.4)] lg:col-span-6">
+            <div className="rounded-lg border border-arcade-purple/35 bg-background p-4">
               <div className="flex items-center justify-between border-b border-border pb-3 text-xs">
-                <span className="font-mono text-muted-foreground">Efficiency benchmark preview</span>
-                <span className="font-mono text-muted-foreground tabular">
+                <span className="font-mono text-highlight">Efficiency benchmark preview</span>
+                <span className="font-mono text-warning tabular">
                   Lv.{stats.rank.level} {stats.rank.title}
                 </span>
               </div>
 
               <div className="mt-4 space-y-3">
-                <div className="rounded-lg border border-border bg-card p-3">
+                <div className="rounded-lg border border-primary/35 bg-card p-3">
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2.5">
                       <GradeBadge grade="D" />
@@ -104,13 +104,13 @@ function Index() {
                       </div>
                     </div>
                     <div className="text-right font-mono text-xs tabular">
-                      <div className="text-destructive">24% eff</div>
+                      <div className="text-primary">24% eff</div>
                       <div className="text-muted-foreground">3 extra turns</div>
                     </div>
                   </div>
                 </div>
 
-                <div className="rounded-lg border border-primary/40 bg-secondary p-3">
+                <div className="rounded-lg border border-highlight/55 bg-secondary p-3">
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2.5">
                       <GradeBadge grade="S" />
@@ -124,8 +124,8 @@ function Index() {
                       </div>
                     </div>
                     <div className="text-right font-mono text-xs tabular">
-                      <div className="text-primary">94% eff</div>
-                      <div className="text-muted-foreground">1-shot · 01:48</div>
+                      <div className="text-highlight">94% eff</div>
+                      <div className="text-warning">1-shot · 01:48</div>
                     </div>
                   </div>
                 </div>
@@ -134,7 +134,7 @@ function Index() {
               <div className="mt-4 grid grid-cols-3 gap-3 border-t border-border pt-3 tabular">
                 <div>
                   <div className="text-xs text-muted-foreground">Your efficiency</div>
-                  <div className="mt-0.5 font-mono text-base font-medium text-foreground">
+                  <div className="mt-0.5 font-mono text-base font-medium text-highlight">
                     {stats.completedIds.length ? `${stats.averageEfficiency}%` : "Unranked"}
                   </div>
                 </div>
@@ -148,7 +148,7 @@ function Index() {
                 </div>
                 <div className="text-right">
                   <div className="text-xs text-muted-foreground">Progress</div>
-                  <div className="mt-0.5 font-mono text-base font-medium text-foreground">
+                  <div className="mt-0.5 font-mono text-base font-medium text-warning">
                     {stats.completedIds.length}/{CHALLENGES.length}
                   </div>
                 </div>
@@ -178,7 +178,7 @@ function Index() {
               <div key={item.title} className="space-y-1.5 border-t border-border pt-3">
                 <div className="flex items-center justify-between text-sm">
                   <span className="font-medium text-foreground">{item.title}</span>
-                  <span className="font-mono text-xs text-primary tabular">{item.pct}%</span>
+                  <span className="font-mono text-xs text-highlight tabular">{item.pct}%</span>
                 </div>
                 <p className="text-xs leading-relaxed text-muted-foreground">{item.desc}</p>
               </div>
@@ -196,7 +196,7 @@ function Index() {
               Select a domain to drill specific AI habits
             </p>
           </div>
-          <Link to="/missions" className="text-sm text-primary hover:underline">
+          <Link to="/missions" className="text-sm text-highlight hover:underline">
             Explore all {CHALLENGES.length} missions
           </Link>
         </div>
@@ -209,17 +209,17 @@ function Index() {
                 key={d.id}
                 to="/missions"
                 search={{ domain: d.id }}
-                className="group flex flex-col justify-between rounded-xl border border-border bg-card p-5 transition-colors duration-150 hover:border-foreground/25 hover:bg-secondary/60"
+                className="group flex flex-col justify-between rounded-xl border border-arcade-purple/35 bg-card p-5 transition-colors duration-150 hover:border-highlight/60 hover:bg-secondary/70"
               >
                 <div>
                   <div className="flex items-center justify-between">
                     <d.icon
-                      className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground"
+                      className="h-4 w-4 text-highlight transition-colors group-hover:text-primary"
                       strokeWidth={1.5}
                       aria-hidden
                     />
                     {domainStat && domainStat.attempts > 0 && (
-                      <span className="font-mono text-xs text-primary tabular">
+                      <span className="font-mono text-xs text-highlight tabular">
                         {domainStat.score}%
                       </span>
                     )}
@@ -244,7 +244,7 @@ function Index() {
           </div>
           <Link
             to="/missions"
-            className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+            className="inline-flex items-center gap-1 text-sm text-highlight hover:underline"
           >
             All missions
             <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden />

@@ -197,18 +197,18 @@ export function ChallengeRunner({
           <span
             className={cn(
               "keycap",
-              overtime ? "border-warning/40 text-warning" : "text-foreground",
+              overtime ? "border-warning/60 text-warning" : "border-highlight/45 text-highlight",
             )}
           >
-            <Clock className="mr-1.5 h-3.5 w-3.5 text-muted-foreground" strokeWidth={1.5} aria-hidden />
+            <Clock className="mr-1.5 h-3.5 w-3.5" strokeWidth={1.5} aria-hidden />
             {formatDuration(seconds)} / {formatDuration(parSeconds)} par
           </span>
           {challenge.payload.kind === "text" && (
-            <span className="font-mono text-muted-foreground tabular">
+            <span className="font-mono text-highlight tabular">
               {turnsUsed === 0 ? "1-shot ready" : `${turnsUsed} sim runs`}
             </span>
           )}
-          <span className="font-mono text-muted-foreground tabular">
+          <span className="font-mono text-warning tabular">
             Hints {hintsShown}/{challenge.hints.length}
           </span>
           <button

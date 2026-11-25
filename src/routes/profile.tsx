@@ -114,18 +114,18 @@ function ProfilePage() {
         </div>
 
         <div className="mt-6 grid gap-3 sm:grid-cols-4">
-          <div className="rounded-lg border border-border bg-background/60 p-4">
+          <div className="rounded-lg border border-arcade-purple/40 bg-background/70 p-4">
             <div className="text-xs text-muted-foreground">AI efficiency index</div>
-            <div className="mt-1 font-mono text-2xl font-medium tabular">
+            <div className="mt-1 font-mono text-2xl font-medium text-highlight tabular">
               {stats.completedIds.length ? `${stats.averageEfficiency}/100` : "—"}
             </div>
             <div className="mt-1 text-xs text-muted-foreground">
               {stats.completedIds.length ? proficiencyBand(stats.averageEfficiency) : "No runs yet"}
             </div>
           </div>
-          <div className="rounded-lg border border-border bg-background/60 p-4">
+          <div className="rounded-lg border border-arcade-purple/40 bg-background/70 p-4">
             <div className="text-xs text-muted-foreground">Total XP</div>
-            <div className="mt-1 font-mono text-2xl font-medium text-primary tabular">
+            <div className="mt-1 font-mono text-2xl font-medium text-warning tabular">
               {stats.totalXp}
             </div>
             <div className="mt-1 text-xs text-muted-foreground tabular">
@@ -160,18 +160,18 @@ function ProfilePage() {
             {mounted ? (
               <ResponsiveContainer width="100%" height="100%">
                 <RadarChart data={radarData}>
-                  <PolarGrid stroke="rgba(238,240,245,0.1)" />
+                  <PolarGrid stroke="rgba(131,56,236,0.3)" />
                   <PolarAngleAxis
                     dataKey="domain"
-                    tick={{ fill: "#a3a9b8", fontSize: 12, fontFamily: "Roboto, sans-serif" }}
+                    tick={{ fill: "#d8cff7", fontSize: 12, fontFamily: "Roboto, sans-serif" }}
                   />
                   <PolarRadiusAxis domain={[0, 100]} tick={false} axisLine={false} />
                   <Radar
                     name="Efficiency"
                     dataKey="score"
-                    stroke="oklch(0.68 0.14 235)"
-                    fill="oklch(0.68 0.14 235)"
-                    fillOpacity={0.28}
+                    stroke="#00F5FF"
+                    fill="#8338EC"
+                    fillOpacity={0.38}
                   />
                 </RadarChart>
               </ResponsiveContainer>
@@ -344,8 +344,8 @@ function ProfilePage() {
                       </div>
                     </div>
                     <div className="text-right font-mono text-xs tabular">
-                      <div className="font-medium text-foreground">{eff}% eff</div>
-                      <div className="text-primary">+{submissionXp(s)} XP</div>
+                      <div className="font-medium text-highlight">{eff}% eff</div>
+                      <div className="text-warning">+{submissionXp(s)} XP</div>
                     </div>
                   </Link>
                 );

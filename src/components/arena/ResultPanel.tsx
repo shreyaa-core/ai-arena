@@ -28,15 +28,15 @@ export function ResultPanel({
 }) {
   return (
     <div className="space-y-6">
-      <div className="rounded-xl border border-border bg-card p-6 text-foreground">
+      <div className="rounded-xl border border-arcade-purple/45 bg-card p-6 text-foreground">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <GradeBadge grade={efficiency.grade} size="lg" />
             <div>
-              <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+              <div className="flex flex-wrap items-center gap-2 text-xs text-highlight">
                 <span>Mission debrief</span>
                 {efficiency.signalDensity && (
-                  <span className="tag border-border bg-secondary text-foreground">
+                  <span className="tag border-arcade-purple/50 bg-secondary text-foreground">
                     Signal: {efficiency.signalDensity}
                   </span>
                 )}
@@ -51,9 +51,9 @@ export function ResultPanel({
             </div>
           </div>
 
-          <div className="rounded-lg border border-border bg-secondary px-4 py-2.5 text-right">
+          <div className="rounded-lg border border-warning/40 bg-secondary px-4 py-2.5 text-right">
             <div className="text-xs text-muted-foreground">XP earned</div>
-            <div className="font-mono text-2xl font-medium text-primary tabular">
+            <div className="font-mono text-2xl font-medium text-warning tabular">
               +{efficiency.xpEarned}
             </div>
           </div>
@@ -62,7 +62,7 @@ export function ResultPanel({
         {efficiency.bonuses.length > 0 && (
           <div className="mt-4 flex flex-wrap gap-2">
             {efficiency.bonuses.map((b) => (
-              <span key={b} className="tag border-border bg-secondary text-foreground font-mono">
+              <span key={b} className="tag border-highlight/40 bg-highlight/10 text-highlight font-mono">
                 {b}
               </span>
             ))}

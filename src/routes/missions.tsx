@@ -94,7 +94,7 @@ function MissionsPage() {
             className={cn(
               "tag cursor-pointer transition-colors",
               domain === "all"
-                ? "border-primary/50 bg-secondary text-foreground"
+                ? "border-highlight/60 bg-arcade-purple/25 text-foreground"
                 : "border-border text-muted-foreground hover:text-foreground",
             )}
           >
@@ -108,7 +108,7 @@ function MissionsPage() {
               className={cn(
                 "tag cursor-pointer transition-colors",
                 domain === d.id
-                  ? "border-primary/50 bg-secondary text-foreground"
+                  ? "border-highlight/60 bg-arcade-purple/25 text-foreground"
                   : "border-border text-muted-foreground hover:text-foreground",
               )}
             >
@@ -128,7 +128,7 @@ function MissionsPage() {
                 className={cn(
                   "tag cursor-pointer transition-colors",
                   difficulty === diff
-                    ? "border-primary/50 bg-secondary text-foreground"
+                    ? "border-highlight/60 bg-arcade-purple/25 text-foreground"
                     : "border-border text-muted-foreground hover:text-foreground",
                 )}
               >
@@ -147,7 +147,7 @@ function MissionsPage() {
                 className={cn(
                   "tag cursor-pointer capitalize transition-colors",
                   status === st
-                    ? "border-primary/50 bg-secondary text-foreground"
+                    ? "border-highlight/60 bg-arcade-purple/25 text-foreground"
                     : "border-border text-muted-foreground hover:text-foreground",
                 )}
               >
@@ -166,7 +166,7 @@ function MissionsPage() {
               className={cn(
                 "tag cursor-pointer transition-colors",
                 type === "all"
-                  ? "border-primary/50 bg-secondary text-foreground"
+                  ? "border-highlight/60 bg-arcade-purple/25 text-foreground"
                   : "border-border text-muted-foreground hover:text-foreground",
               )}
             >
@@ -180,7 +180,7 @@ function MissionsPage() {
                 className={cn(
                   "tag cursor-pointer transition-colors",
                   type === t
-                    ? "border-primary/50 bg-secondary text-foreground"
+                    ? "border-highlight/60 bg-arcade-purple/25 text-foreground"
                     : "border-border text-muted-foreground hover:text-foreground",
                 )}
               >

@@ -27,7 +27,7 @@ export function SiteHeader() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-sm">
+    <header className="sticky top-0 z-40 border-b border-arcade-purple/35 bg-background/90 backdrop-blur-md">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <div className="flex items-center gap-6">
           <Logo />
@@ -42,11 +42,15 @@ export function SiteHeader() {
                   className={cn(
                     "inline-flex h-8 items-center gap-2 rounded-md px-3 text-sm transition-colors duration-150",
                     active
-                      ? "bg-secondary text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
-                      : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground",
+                      ? "border border-highlight/45 bg-arcade-purple/25 text-foreground"
+                      : "text-muted-foreground hover:bg-secondary/80 hover:text-foreground",
                   )}
                 >
-                  <item.icon className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} aria-hidden />
+                  <item.icon
+                    className={cn("h-4 w-4", active ? "text-highlight" : "text-muted-foreground")}
+                    strokeWidth={1.5}
+                    aria-hidden
+                  />
                   <span>{item.label}</span>
                 </Link>
               );
@@ -57,23 +61,23 @@ export function SiteHeader() {
         <div className="flex items-center gap-3 text-xs">
           {stats.currentStreak > 0 && (
             <span
-              className="hidden items-center gap-1 font-mono text-muted-foreground tabular sm:inline-flex"
+              className="hidden items-center gap-1 font-mono text-warning tabular sm:inline-flex"
               title="Active 70%+ efficiency streak"
             >
-              <Flame className="h-3.5 w-3.5 text-warning" strokeWidth={1.5} aria-hidden />
+              <Flame className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden />
               {stats.currentStreak}x
             </span>
           )}
-          <span className="hidden font-mono text-muted-foreground tabular sm:inline">
+          <span className="hidden font-mono text-highlight tabular sm:inline">
             {stats.completedIds.length ? `${stats.averageEfficiency}% eff` : "Unranked"}
           </span>
           <Link
             to="/profile"
-            className="inline-flex h-8 items-center gap-2 rounded-md border border-border bg-secondary px-2.5 font-mono text-xs text-foreground tabular transition-colors duration-150 hover:bg-accent"
+            className="inline-flex h-8 items-center gap-2 rounded-md border border-arcade-purple/50 bg-secondary px-2.5 font-mono text-xs text-foreground tabular transition-colors duration-150 hover:border-highlight/60"
             title={`${stats.rank.title} — ${stats.totalXp} XP`}
           >
-            <span className="text-muted-foreground">Lv.{stats.rank.level}</span>
-            <span>{stats.totalXp} XP</span>
+            <span className="text-highlight">Lv.{stats.rank.level}</span>
+            <span className="text-warning">{stats.totalXp} XP</span>
           </Link>
         </div>
       </div>
@@ -90,7 +94,7 @@ export function SiteHeader() {
               to={item.to}
               className={cn(
                 "flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs transition-colors",
-                active ? "bg-secondary text-foreground" : "text-muted-foreground",
+                active ? "bg-arcade-purple/25 text-highlight" : "text-muted-foreground",
               )}
             >
               <item.icon className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden />
@@ -105,7 +109,7 @@ export function SiteHeader() {
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-border py-6 text-center text-xs text-muted-foreground">
+    <footer className="border-t border-arcade-purple/30 py-6 text-center text-xs text-muted-foreground">
       AI Arena is an indicative practice game and rubric assessment — not a certified credential
     </footer>
   );

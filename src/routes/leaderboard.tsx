@@ -81,7 +81,7 @@ function LeaderboardPage() {
                 className={cn(
                   "transition-colors",
                   row.isYou
-                    ? "bg-secondary shadow-[inset_2px_0_0_var(--color-primary)]"
+                    ? "bg-arcade-purple/20 shadow-[inset_2px_0_0_#00F5FF]"
                     : "hover:bg-secondary/40",
                 )}
               >
@@ -92,15 +92,17 @@ function LeaderboardPage() {
                   <div className="flex items-center gap-2">
                     <span className="font-medium">{row.alias}</span>
                     {row.isYou && (
-                      <span className="tag border-primary/40 bg-primary/15 text-primary">
+                      <span className="tag border-highlight/50 bg-highlight/15 text-highlight">
                         You
                       </span>
                     )}
                   </div>
                   <div className="text-xs text-muted-foreground">{row.rankTitle}</div>
                 </td>
-                <td className="px-4 py-3 text-right font-mono tabular">{row.efficiency}%</td>
-                <td className="px-4 py-3 text-right font-mono text-primary tabular">{row.xp}</td>
+                <td className="px-4 py-3 text-right font-mono text-highlight tabular">
+                  {row.efficiency}%
+                </td>
+                <td className="px-4 py-3 text-right font-mono text-warning tabular">{row.xp}</td>
                 <td className="px-4 py-3 text-right font-mono tabular">{row.cleared}/12</td>
                 <td className="hidden px-4 py-3 text-right font-mono tabular sm:table-cell">
                   {row.bestStreak}x

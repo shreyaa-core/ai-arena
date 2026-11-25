@@ -123,8 +123,11 @@ export function evaluateWorkflow(p: WorkflowPayload, ids: string[]): EvaluationR
   let good = 0;
   for (let i = 0; i < chosenReq.length; i++)
     for (let k = i + 1; k < chosenReq.length; k++) {
+      const a = chosenReq[i];
+      const b = chosenReq[k];
+      if (!a || !b) continue;
       pairs++;
-      if (chosenReq[i].order! < chosenReq[k].order!) good++;
+      if (a.order! < b.order!) good++;
     }
   const orderScore = pairs ? good / pairs : 0;
   const verifySteps = required.filter((s) => s.verify);

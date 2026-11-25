@@ -9,6 +9,7 @@ export type ChallengeType =
   | "improve-output";
 export type Criterion = "relevance" | "clarity" | "specificity" | "verification" | "safety";
 export type RiskLevel = "low" | "medium" | "high";
+export type Grade = "S" | "A" | "B" | "C" | "D";
 
 /** A regex-detectable signal of quality in free text. */
 export interface Signal {
@@ -98,14 +99,33 @@ export interface EvaluationResult {
   criteria: CriterionScore[];
   strengths: string[];
   improvements: string[];
-  details?: { id: string; ok: boolean; label: string; note: string }[];
+  details?: { id: string; ok: boolean; label: string; note: string }[] | undefined;
   evaluator: "rubric-v1" | "llm";
+}
+
+export interface EfficiencyBreakdown {
+  /** Overall 0–100 AI Efficiency Score combining quality, speed, turns, and independence. */
+  efficiency: number;
+  grade: Grade;
+  rubricScore: number;
+  speedScore: number;
+  turnScore: number;
+  hintScore: number;
+  parSeconds: number;
+  xpEarned: number;
+  bonuses: string[];
+  signalDensity?: "Concise" | "Balanced" | "Verbose" | "Too Brief" | undefined;
 }
 
 export interface Submission {
   id: string;
   challengeId: string;
   score: number;
+  efficiency?: number;
+  grade?: Grade;
+  xp?: number;
+  hintsUsed?: number;
+  turnsUsed?: number;
   criteria: CriterionScore[];
   seconds: number;
   at: string;
@@ -119,9 +139,19 @@ export interface Profile {
   onboarded: boolean;
   email: string | null;
 }
+export interface BlitzRecord {
+  id: string;
+  preset: string;
+  averageEfficiency: number;
+  grade: Grade;
+  totalSeconds: number;
+  xpEarned: number;
+  at: string;
+}
 export interface ArenaState {
   version: 1;
   profile: Profile;
   submissions: Submission[];
   saved: string[];
+  blitzRuns?: BlitzRecord[];
 }

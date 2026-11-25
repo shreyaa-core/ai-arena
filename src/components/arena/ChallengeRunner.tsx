@@ -208,7 +208,7 @@ export function ChallengeRunner({
               {turnsUsed === 0 ? "1-shot ready" : `${turnsUsed} sim runs`}
             </span>
           )}
-          <span className="font-mono text-warning tabular">
+          <span className="font-mono text-nebula tabular">
             Hints {hintsShown}/{challenge.hints.length}
           </span>
           <button

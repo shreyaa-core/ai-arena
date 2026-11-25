@@ -114,7 +114,7 @@ function ProfilePage() {
         </div>
 
         <div className="mt-6 grid gap-3 sm:grid-cols-4">
-          <div className="rounded-lg border border-arcade-purple/40 bg-background/70 p-4">
+          <div className="rounded-lg border border-border bg-background/70 p-4">
             <div className="text-xs text-muted-foreground">AI efficiency index</div>
             <div className="mt-1 font-mono text-2xl font-medium text-highlight tabular">
               {stats.completedIds.length ? `${stats.averageEfficiency}/100` : "—"}
@@ -123,9 +123,9 @@ function ProfilePage() {
               {stats.completedIds.length ? proficiencyBand(stats.averageEfficiency) : "No runs yet"}
             </div>
           </div>
-          <div className="rounded-lg border border-arcade-purple/40 bg-background/70 p-4">
+          <div className="rounded-lg border border-border bg-background/70 p-4">
             <div className="text-xs text-muted-foreground">Total XP</div>
-            <div className="mt-1 font-mono text-2xl font-medium text-warning tabular">
+            <div className="mt-1 font-mono text-2xl font-medium text-nebula tabular">
               {stats.totalXp}
             </div>
             <div className="mt-1 text-xs text-muted-foreground tabular">
@@ -160,18 +160,18 @@ function ProfilePage() {
             {mounted ? (
               <ResponsiveContainer width="100%" height="100%">
                 <RadarChart data={radarData}>
-                  <PolarGrid stroke="rgba(131,56,236,0.3)" />
+                  <PolarGrid stroke="rgba(79,70,229,0.28)" />
                   <PolarAngleAxis
                     dataKey="domain"
-                    tick={{ fill: "#d8cff7", fontSize: 12, fontFamily: "Chakra Petch, sans-serif" }}
+                    tick={{ fill: "#cbd5e1", fontSize: 12, fontFamily: "Chakra Petch, sans-serif" }}
                   />
                   <PolarRadiusAxis domain={[0, 100]} tick={false} axisLine={false} />
                   <Radar
                     name="Efficiency"
                     dataKey="score"
-                    stroke="#00F5FF"
-                    fill="#8338EC"
-                    fillOpacity={0.38}
+                    stroke="#22D3EE"
+                    fill="#A855F7"
+                    fillOpacity={0.34}
                   />
                 </RadarChart>
               </ResponsiveContainer>
@@ -345,7 +345,7 @@ function ProfilePage() {
                     </div>
                     <div className="text-right font-mono text-xs tabular">
                       <div className="font-medium text-highlight">{eff}% eff</div>
-                      <div className="text-warning">+{submissionXp(s)} XP</div>
+                      <div className="text-nebula">+{submissionXp(s)} XP</div>
                     </div>
                   </Link>
                 );

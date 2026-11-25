@@ -67,7 +67,7 @@ function BlitzPage() {
     const pastRuns = state.blitzRuns ?? [];
     return (
       <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
-        <div className="rounded-xl border border-arcade-purple/45 bg-card p-6">
+        <div className="rounded-xl border border-primary/40 bg-card p-6">
           <div className="text-xs font-mono text-highlight">3-round timed gauntlet</div>
           <h1 className="mt-2 text-3xl font-medium">Efficiency Blitz</h1>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
@@ -134,7 +134,7 @@ function BlitzPage() {
                   <div className="flex items-center gap-4 font-mono text-xs text-muted-foreground tabular">
                     <span className="text-highlight">{run.averageEfficiency}% eff</span>
                     <span>{formatDuration(run.totalSeconds)}</span>
-                    <span className="text-warning">+{run.xpEarned} XP</span>
+                    <span className="text-nebula">+{run.xpEarned} XP</span>
                   </div>
                 </div>
               ))}
@@ -177,7 +177,7 @@ function BlitzPage() {
             </div>
             <div className="text-right tabular">
               <div className="text-xs text-muted-foreground">Total XP</div>
-              <div className="font-mono text-2xl font-medium text-warning">+{totalXp}</div>
+              <div className="font-mono text-2xl font-medium text-nebula">+{totalXp}</div>
             </div>
           </div>
 

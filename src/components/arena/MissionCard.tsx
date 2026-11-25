@@ -8,23 +8,23 @@ import type { Challenge, Difficulty, Grade, Submission } from "@/lib/arena/types
 import { cn } from "@/lib/utils";
 
 const DIFF_DOT: Record<Difficulty, string> = {
-  Beginner: "bg-[#00b8c4]",
-  Intermediate: "bg-[#d99b00]",
-  Advanced: "bg-[#FF006E]",
+  Beginner: "bg-[#0891b2]",
+  Intermediate: "bg-[#4F46E5]",
+  Advanced: "bg-[#A855F7]",
 };
 
 const GRADE_STYLE_DARK: Record<Grade, string> = {
   S: "border-highlight/60 bg-highlight/15 text-highlight",
-  A: "border-success/60 bg-success/15 text-success",
-  B: "border-arcade-purple/70 bg-arcade-purple/25 text-foreground",
+  A: "border-primary/70 bg-primary/25 text-foreground",
+  B: "border-nebula/60 bg-nebula/20 text-nebula",
   C: "border-warning/60 bg-warning/15 text-warning",
-  D: "border-primary/60 bg-primary/20 text-primary",
+  D: "border-destructive/60 bg-destructive/20 text-destructive",
 };
 
 const GRADE_STYLE_PAPER: Record<Grade, string> = {
   S: "border-cyan-500 bg-cyan-50 text-cyan-900",
-  A: "border-emerald-500 bg-emerald-50 text-emerald-900",
-  B: "border-purple-400 bg-purple-50 text-purple-900",
+  A: "border-indigo-500 bg-indigo-50 text-indigo-900",
+  B: "border-purple-500 bg-purple-50 text-purple-900",
   C: "border-amber-500 bg-amber-50 text-amber-900",
   D: "border-rose-500 bg-rose-50 text-rose-900",
 };
@@ -66,12 +66,12 @@ export function MissionCard({
   const grade = bestSubmission ? (bestSubmission.grade ?? gradeFromScore(eff!)) : null;
 
   return (
-    <article className="flex flex-col justify-between rounded-xl border border-paper-border bg-paper p-5 text-paper-foreground shadow-[0_2px_10px_rgba(13,2,33,0.22)] transition-[border-color,box-shadow] duration-150 hover:border-arcade-purple/60 hover:shadow-[0_6px_24px_rgba(131,56,236,0.2)]">
+    <article className="flex flex-col justify-between rounded-xl border border-paper-border bg-paper p-5 text-paper-foreground shadow-[0_2px_10px_rgba(3,7,18,0.22)] transition-[border-color,box-shadow] duration-150 hover:border-primary/50 hover:shadow-[0_8px_24px_rgba(79,70,229,0.22)]">
       <div>
         <div className="flex items-start justify-between gap-2">
           <div className="flex flex-wrap items-center gap-2 text-xs text-paper-muted-foreground">
             <span className="tag border-paper-border bg-paper-muted text-paper-foreground">
-              <domain.icon className="h-3.5 w-3.5 text-arcade-purple" strokeWidth={1.5} aria-hidden />
+              <domain.icon className="h-3.5 w-3.5 text-primary" strokeWidth={1.5} aria-hidden />
               {domain.label}
             </span>
             <span className="tag border-paper-border bg-white text-paper-foreground">
@@ -97,7 +97,7 @@ export function MissionCard({
           </button>
         </div>
 
-        <h3 className="mt-3 text-base font-medium leading-snug text-paper-foreground">
+        <h3 className="mt-3 text-base font-semibold leading-snug text-paper-foreground">
           {challenge.title}
         </h3>
         <p className="mt-1.5 text-sm leading-relaxed text-paper-muted-foreground">

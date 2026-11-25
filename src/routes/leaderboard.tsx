@@ -81,7 +81,7 @@ function LeaderboardPage() {
                 className={cn(
                   "transition-colors",
                   row.isYou
-                    ? "bg-arcade-purple/20 shadow-[inset_2px_0_0_#00F5FF]"
+                    ? "bg-primary/20 shadow-[inset_2px_0_0_#22D3EE]"
                     : "hover:bg-secondary/40",
                 )}
               >
@@ -102,7 +102,7 @@ function LeaderboardPage() {
                 <td className="px-4 py-3 text-right font-mono text-highlight tabular">
                   {row.efficiency}%
                 </td>
-                <td className="px-4 py-3 text-right font-mono text-warning tabular">{row.xp}</td>
+                <td className="px-4 py-3 text-right font-mono text-nebula tabular">{row.xp}</td>
                 <td className="px-4 py-3 text-right font-mono tabular">{row.cleared}/12</td>
                 <td className="hidden px-4 py-3 text-right font-mono tabular sm:table-cell">
                   {row.bestStreak}x

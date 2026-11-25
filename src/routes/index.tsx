@@ -80,17 +80,17 @@ function Index() {
           </div>
 
           {/* Product Moment: Live Benchmark Console */}
-          <div className="rounded-2xl border border-arcade-purple/45 bg-card p-3 shadow-[0_12px_40px_-12px_oklch(0.555_0.245_293/0.4)] lg:col-span-6">
-            <div className="rounded-lg border border-arcade-purple/35 bg-background p-4">
+          <div className="rounded-2xl border border-primary/40 bg-card p-3 shadow-[0_12px_40px_-12px_oklch(0.515_0.235_272/0.4)] lg:col-span-6">
+            <div className="rounded-lg border border-border bg-background p-4">
               <div className="flex items-center justify-between border-b border-border pb-3 text-xs">
                 <span className="font-mono text-highlight">Efficiency benchmark preview</span>
-                <span className="font-mono text-warning tabular">
+                <span className="font-mono text-nebula tabular">
                   Lv.{stats.rank.level} {stats.rank.title}
                 </span>
               </div>
 
               <div className="mt-4 space-y-3">
-                <div className="rounded-lg border border-primary/35 bg-card p-3">
+                <div className="rounded-lg border border-destructive/35 bg-card p-3">
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2.5">
                       <GradeBadge grade="D" />
@@ -104,7 +104,7 @@ function Index() {
                       </div>
                     </div>
                     <div className="text-right font-mono text-xs tabular">
-                      <div className="text-primary">24% eff</div>
+                      <div className="text-destructive">24% eff</div>
                       <div className="text-muted-foreground">3 extra turns</div>
                     </div>
                   </div>
@@ -125,7 +125,7 @@ function Index() {
                     </div>
                     <div className="text-right font-mono text-xs tabular">
                       <div className="text-highlight">94% eff</div>
-                      <div className="text-warning">1-shot · 01:48</div>
+                      <div className="text-nebula">1-shot · 01:48</div>
                     </div>
                   </div>
                 </div>
@@ -148,7 +148,7 @@ function Index() {
                 </div>
                 <div className="text-right">
                   <div className="text-xs text-muted-foreground">Progress</div>
-                  <div className="mt-0.5 font-mono text-base font-medium text-warning">
+                  <div className="mt-0.5 font-mono text-base font-medium text-nebula">
                     {stats.completedIds.length}/{CHALLENGES.length}
                   </div>
                 </div>
@@ -209,12 +209,12 @@ function Index() {
                 key={d.id}
                 to="/missions"
                 search={{ domain: d.id }}
-                className="group flex flex-col justify-between rounded-xl border border-arcade-purple/35 bg-card p-5 transition-colors duration-150 hover:border-highlight/60 hover:bg-secondary/70"
+                className="group flex flex-col justify-between rounded-xl border border-border bg-card p-5 transition-colors duration-150 hover:border-highlight/60 hover:bg-secondary/70"
               >
                 <div>
                   <div className="flex items-center justify-between">
                     <d.icon
-                      className="h-4 w-4 text-highlight transition-colors group-hover:text-primary"
+                      className="h-4 w-4 text-highlight transition-colors group-hover:text-nebula"
                       strokeWidth={1.5}
                       aria-hidden
                     />

@@ -61,20 +61,24 @@ function MissionsPage() {
   };
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10">
+    <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Mission Explorer</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {stats.completedIds.length} of {CHALLENGES.length} missions cleared • Choose a challenge to test your speed and prompt precision.
+          <h1 className="text-3xl font-medium">Missions</h1>
+          <p className="mt-1 text-sm text-muted-foreground tabular">
+            {stats.completedIds.length} of {CHALLENGES.length} cleared
           </p>
         </div>
         <div className="relative w-full sm:w-72">
-          <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" aria-hidden />
+          <Search
+            className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-muted-foreground"
+            strokeWidth={1.5}
+            aria-hidden
+          />
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search missions…"
+            placeholder="Search"
             aria-label="Search missions"
             className="pl-9"
           />
@@ -82,14 +86,16 @@ function MissionsPage() {
       </div>
 
       <div className="mt-6 space-y-3 rounded-xl border border-border bg-card p-4">
-        <div className="flex flex-wrap items-center gap-1.5">
-          <span className="mr-1 text-xs font-semibold text-muted-foreground">Domain:</span>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="w-16 text-xs text-muted-foreground">Domain</span>
           <button
             type="button"
             onClick={() => setDomain("all")}
             className={cn(
-              "chip cursor-pointer",
-              domain === "all" ? "border-primary bg-primary/20 text-foreground" : "border-border text-muted-foreground",
+              "tag cursor-pointer transition-colors",
+              domain === "all"
+                ? "border-primary/50 bg-secondary text-foreground"
+                : "border-border text-muted-foreground hover:text-foreground",
             )}
           >
             All
@@ -100,8 +106,10 @@ function MissionsPage() {
               type="button"
               onClick={() => setDomain(d.id)}
               className={cn(
-                "chip cursor-pointer",
-                domain === d.id ? "border-primary bg-primary/20 text-foreground" : "border-border text-muted-foreground",
+                "tag cursor-pointer transition-colors",
+                domain === d.id
+                  ? "border-primary/50 bg-secondary text-foreground"
+                  : "border-border text-muted-foreground hover:text-foreground",
               )}
             >
               {d.label}
@@ -109,17 +117,19 @@ function MissionsPage() {
           ))}
         </div>
 
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="mr-1 text-xs font-semibold text-muted-foreground">Difficulty:</span>
+        <div className="flex flex-wrap items-center gap-6">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="w-16 text-xs text-muted-foreground">Level</span>
             {(["all", ...DIFFICULTIES] as const).map((diff) => (
               <button
                 key={diff}
                 type="button"
                 onClick={() => setDifficulty(diff)}
                 className={cn(
-                  "chip cursor-pointer",
-                  difficulty === diff ? "border-highlight bg-highlight/15 text-highlight" : "border-border text-muted-foreground",
+                  "tag cursor-pointer transition-colors",
+                  difficulty === diff
+                    ? "border-primary/50 bg-secondary text-foreground"
+                    : "border-border text-muted-foreground hover:text-foreground",
                 )}
               >
                 {diff === "all" ? "All" : diff}
@@ -127,16 +137,18 @@ function MissionsPage() {
             ))}
           </div>
 
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="mr-1 text-xs font-semibold text-muted-foreground">Status:</span>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs text-muted-foreground">Status</span>
             {(["all", "unplayed", "cleared", "saved"] as const).map((st) => (
               <button
                 key={st}
                 type="button"
                 onClick={() => setStatus(st)}
                 className={cn(
-                  "chip cursor-pointer capitalize",
-                  status === st ? "border-primary bg-primary/20 text-foreground" : "border-border text-muted-foreground",
+                  "tag cursor-pointer capitalize transition-colors",
+                  status === st
+                    ? "border-primary/50 bg-secondary text-foreground"
+                    : "border-border text-muted-foreground hover:text-foreground",
                 )}
               >
                 {st}
@@ -146,14 +158,16 @@ function MissionsPage() {
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="mr-1 text-xs font-semibold text-muted-foreground">Type:</span>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="w-16 text-xs text-muted-foreground">Format</span>
             <button
               type="button"
               onClick={() => setType("all")}
               className={cn(
-                "chip cursor-pointer",
-                type === "all" ? "border-primary bg-primary/20 text-foreground" : "border-border text-muted-foreground",
+                "tag cursor-pointer transition-colors",
+                type === "all"
+                  ? "border-primary/50 bg-secondary text-foreground"
+                  : "border-border text-muted-foreground hover:text-foreground",
               )}
             >
               All
@@ -164,8 +178,10 @@ function MissionsPage() {
                 type="button"
                 onClick={() => setType(t)}
                 className={cn(
-                  "chip cursor-pointer",
-                  type === t ? "border-primary bg-primary/20 text-foreground" : "border-border text-muted-foreground",
+                  "tag cursor-pointer transition-colors",
+                  type === t
+                    ? "border-primary/50 bg-secondary text-foreground"
+                    : "border-border text-muted-foreground hover:text-foreground",
                 )}
               >
                 {TYPE_LABEL[t]}
@@ -175,7 +191,7 @@ function MissionsPage() {
 
           {(query || domain !== "all" || difficulty !== "all" || type !== "all" || status !== "all") && (
             <Button type="button" size="sm" variant="ghost" onClick={resetFilters}>
-              <X className="h-3.5 w-3.5" aria-hidden />
+              <X className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden />
               Reset
             </Button>
           )}
@@ -183,10 +199,10 @@ function MissionsPage() {
       </div>
 
       {filtered.length === 0 ? (
-        <div className="mt-10 rounded-xl border border-border bg-card p-10 text-center">
-          <p className="text-sm text-muted-foreground">No missions match those filters.</p>
+        <div className="mt-8 rounded-xl border border-border bg-card p-10 text-center">
+          <p className="text-sm text-muted-foreground">No missions match those filters</p>
           <Button type="button" variant="outline" className="mt-4" onClick={resetFilters}>
-            Clear Filters
+            Clear filters
           </Button>
         </div>
       ) : (

@@ -1,12 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Flame, Gauge, Play, Sparkles, Trophy, Zap } from "lucide-react";
-import { MissionCard } from "@/components/arena/MissionCard";
+import { ArrowRight, Play, Zap } from "lucide-react";
+import { GradeBadge, MissionCard } from "@/components/arena/MissionCard";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { CHALLENGES, challengeById } from "@/lib/arena/challenges";
 import { DOMAINS } from "@/lib/arena/domains";
 import {
-  computeBadges,
   computePlayerStats,
   proficiencyBand,
   recommendNextChallenge,
@@ -17,13 +16,13 @@ import type { Challenge } from "@/lib/arena/types";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "AI Arena — Test How Efficiently You Work With AI" },
+      { title: "AI Arena — Measure how efficiently you work with AI" },
       {
         name: "description",
         content:
-          "An interactive AI efficiency game with timed missions, prompt simulation, and transparent rubric scoring.",
+          "Interactive missions that score prompt clarity, speed vs par time, turn economy, and verification skill.",
       },
-      { property: "og:title", content: "AI Arena — AI Efficiency Game" },
+      { property: "og:title", content: "AI Arena" },
       {
         property: "og:description",
         content:
@@ -39,8 +38,6 @@ export const Route = createFileRoute("/")({
 function Index() {
   const state = useArenaState();
   const stats = computePlayerStats(state);
-  const badges = computeBadges(state, stats);
-  const unlockedBadges = badges.filter((b) => b.unlocked).length;
   const nextMission = recommendNextChallenge(state);
 
   const featured = [
@@ -53,136 +50,158 @@ function Index() {
     .filter((c): c is Challenge => Boolean(c));
 
   return (
-    <div className="relative">
-      <div className="bg-grid pointer-events-none absolute inset-0 h-[520px]" aria-hidden />
-
-      <section className="relative mx-auto max-w-6xl px-4 pb-12 pt-14 md:pt-20">
-        <div className="grid gap-8 lg:grid-cols-12 lg:items-center">
-          <div className="lg:col-span-7">
-            <span className="chip border-primary/40 bg-primary/10 text-highlight">
-              <Sparkles className="h-3 w-3" aria-hidden />
-              Interactive AI Efficiency Game • 12 Missions
-            </span>
-            <h1 className="mt-4 text-4xl font-bold leading-tight md:text-6xl">
-              How <span className="text-gradient">efficiently</span> do you work with AI?
+    <div>
+      {/* Hero: Asymmetric Split with Live Efficiency Benchmark Moment */}
+      <section className="mx-auto max-w-6xl px-4 pb-16 pt-12 sm:px-6 md:pt-20">
+        <div className="grid gap-10 lg:grid-cols-12 lg:items-center">
+          <div className="lg:col-span-6">
+            <h1 className="text-4xl font-medium leading-[1.08] tracking-[-0.03em] text-foreground md:text-5xl">
+              Measure how efficiently you work with AI
             </h1>
-            <p className="mt-4 max-w-xl text-base text-muted-foreground">
-              Every mission scores four dimensions of real AI mastery: output quality, speed vs.
-              par time, first-shot turn economy, and zero-hint independence.
+            <p className="mt-4 max-w-lg text-base leading-relaxed text-muted-foreground">
+              Twelve timed missions across prompting, verification, workflows, and risk triage —
+              scored on output quality, par speed, turn economy, and hint independence.
             </p>
 
-            <div className="mt-7 flex flex-wrap gap-3">
+            <div className="mt-8 flex flex-wrap items-center gap-3">
               <Button asChild size="lg" variant="hero">
                 <Link to="/play/$id" params={{ id: nextMission.id }}>
-                  <Play className="h-4 w-4" aria-hidden />
-                  {stats.completedIds.length > 0 ? "Play Next Mission" : "Start First Mission"}
+                  <Play className="h-4 w-4" strokeWidth={1.5} aria-hidden />
+                  {stats.completedIds.length > 0 ? "Play next mission" : "Start first mission"}
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline">
                 <Link to="/blitz">
-                  <Zap className="h-4 w-4 text-warning" aria-hidden />
-                  3-Round Efficiency Blitz
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="ghost">
-                <Link to="/missions">
-                  Explore All {CHALLENGES.length} Missions
-                  <ArrowRight className="h-4 w-4" aria-hidden />
+                  <Zap className="h-4 w-4" strokeWidth={1.5} aria-hidden />
+                  Run 3-round blitz
                 </Link>
               </Button>
             </div>
           </div>
 
-          {/* Live Player Command Card */}
-          <div className="rounded-2xl border border-border bg-gradient-surface p-6 shadow-glow lg:col-span-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Operator Status
-                </div>
-                <div className="mt-0.5 font-display text-xl font-bold">
+          {/* Product Moment: Live Benchmark Console */}
+          <div className="rounded-2xl border border-border bg-card p-3 lg:col-span-6">
+            <div className="rounded-lg border border-border bg-background p-4">
+              <div className="flex items-center justify-between border-b border-border pb-3 text-xs">
+                <span className="font-mono text-muted-foreground">Efficiency benchmark preview</span>
+                <span className="font-mono text-muted-foreground tabular">
                   Lv.{stats.rank.level} {stats.rank.title}
-                </div>
-              </div>
-              <span className="chip border-highlight/40 bg-highlight/10 text-highlight">
-                {stats.completedIds.length ? proficiencyBand(stats.averageEfficiency) : "Rookie Run"}
-              </span>
-            </div>
-
-            <div className="mt-4 space-y-1.5">
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>{stats.totalXp} XP</span>
-                <span>
-                  {stats.rank.nextXp ? `Next rank at ${stats.rank.nextXp} XP` : "Max rank"}
                 </span>
               </div>
-              <Progress value={stats.rankProgress} className="h-2" />
-            </div>
 
-            <div className="mt-5 grid grid-cols-3 gap-2.5 text-center">
-              <div className="rounded-lg border border-border bg-background/50 p-3">
-                <Gauge className="mx-auto h-4 w-4 text-highlight" aria-hidden />
-                <div className="mt-1 font-display text-lg font-bold">
-                  {stats.completedIds.length ? `${stats.averageEfficiency}%` : "—"}
+              <div className="mt-4 space-y-3">
+                <div className="rounded-lg border border-border bg-card p-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5">
+                      <GradeBadge grade="D" />
+                      <div>
+                        <div className="text-xs font-medium text-foreground">
+                          Unconstrained prompt
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          “write something about our product launch”
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right font-mono text-xs tabular">
+                      <div className="text-destructive">24% eff</div>
+                      <div className="text-muted-foreground">3 extra turns</div>
+                    </div>
+                  </div>
                 </div>
-                <div className="text-[11px] text-muted-foreground">Efficiency</div>
-              </div>
-              <div className="rounded-lg border border-border bg-background/50 p-3">
-                <Flame className="mx-auto h-4 w-4 text-warning" aria-hidden />
-                <div className="mt-1 font-display text-lg font-bold">{stats.currentStreak}</div>
-                <div className="text-[11px] text-muted-foreground">Streak</div>
-              </div>
-              <div className="rounded-lg border border-border bg-background/50 p-3">
-                <Trophy className="mx-auto h-4 w-4 text-primary" aria-hidden />
-                <div className="mt-1 font-display text-lg font-bold">
-                  {unlockedBadges}/{badges.length}
-                </div>
-                <div className="text-[11px] text-muted-foreground">Badges</div>
-              </div>
-            </div>
 
-            <div className="mt-4 flex items-center justify-between border-t border-border pt-3 text-xs text-muted-foreground">
-              <span>
-                Recommended: <strong className="text-foreground">{nextMission.title}</strong>
-              </span>
-              <Link to="/profile" className="font-medium text-highlight hover:underline">
-                Full Report →
-              </Link>
+                <div className="rounded-lg border border-primary/40 bg-secondary p-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5">
+                      <GradeBadge grade="S" />
+                      <div>
+                        <div className="text-xs font-medium text-foreground">
+                          Structured 1-shot brief
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          Audience, 150-word limit, facts, single CTA, no fabrication
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right font-mono text-xs tabular">
+                      <div className="text-primary">94% eff</div>
+                      <div className="text-muted-foreground">1-shot · 01:48</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 grid grid-cols-3 gap-3 border-t border-border pt-3 tabular">
+                <div>
+                  <div className="text-xs text-muted-foreground">Your efficiency</div>
+                  <div className="mt-0.5 font-mono text-base font-medium text-foreground">
+                    {stats.completedIds.length ? `${stats.averageEfficiency}%` : "Unranked"}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-xs text-muted-foreground">Band</div>
+                  <div className="mt-0.5 text-sm font-medium text-foreground">
+                    {stats.completedIds.length
+                      ? proficiencyBand(stats.averageEfficiency)
+                      : "Baseline"}
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xs text-muted-foreground">Progress</div>
+                  <div className="mt-0.5 font-mono text-base font-medium text-foreground">
+                    {stats.completedIds.length}/{CHALLENGES.length}
+                  </div>
+                </div>
+              </div>
+              <Progress value={stats.rankProgress} className="mt-3 h-1.5" />
             </div>
           </div>
         </div>
       </section>
 
-      {/* How Efficiency Is Scored */}
-      <section className="mx-auto max-w-6xl px-4 pb-12">
-        <div className="grid gap-3 rounded-xl border border-border bg-card p-5 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            { pct: "65%", title: "Rubric Quality", desc: "Clarity, verification, specificity, and safety signals." },
-            { pct: "15%", title: "Speed vs. Par", desc: "Beat par time without sacrificing accuracy." },
-            { pct: "10%", title: "Turn Economy", desc: "Nail prompts in 1 shot instead of repeated simulator retries." },
-            { pct: "10%", title: "Zero-Hint Mastery", desc: "Solve independently to keep your 100% no-assist bonus." },
-          ].map((item) => (
-            <div key={item.title} className="rounded-lg border border-border/70 bg-background/40 p-3.5">
-              <span className="font-mono text-xs font-semibold text-highlight">{item.pct} WEIGHT</span>
-              <h2 className="mt-1 text-sm font-semibold">{item.title}</h2>
-              <p className="mt-1 text-xs text-muted-foreground">{item.desc}</p>
-            </div>
-          ))}
+      {/* Scoring Formula Strip */}
+      <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
+        <div className="rounded-xl border border-border bg-card p-5">
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <h2 className="text-base font-medium">How efficiency is scored</h2>
+            <span className="text-xs text-muted-foreground">
+              Submissions under 40/100 rubric quality are capped so speed never beats accuracy
+            </span>
+          </div>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              { pct: 65, title: "Rubric quality", desc: "Clarity, verification, specificity, and safety signals" },
+              { pct: 15, title: "Speed vs par", desc: "Finish under par time without rushing quality" },
+              { pct: 10, title: "Turn economy", desc: "Deliver clear prompts in one shot with fewer retries" },
+              { pct: 10, title: "Zero-hint mastery", desc: "Solve independently without revealing tactical hints" },
+            ].map((item) => (
+              <div key={item.title} className="space-y-1.5 border-t border-border pt-3">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="font-medium text-foreground">{item.title}</span>
+                  <span className="font-mono text-xs text-primary tabular">{item.pct}%</span>
+                </div>
+                <p className="text-xs leading-relaxed text-muted-foreground">{item.desc}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Six Skill Domains */}
-      <section className="mx-auto max-w-6xl px-4 pb-12">
-        <div className="mb-4 flex items-end justify-between">
+      {/* Six Skill Arenas */}
+      <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
+        <div className="mb-4 flex items-baseline justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-semibold">Six AI Skill Arenas</h2>
-            <p className="text-sm text-muted-foreground">Pick a domain to drill specific skills.</p>
+            <h2 className="text-xl font-medium">Skill arenas</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Select a domain to drill specific AI habits
+            </p>
           </div>
-          <Link to="/missions" className="text-sm font-medium text-highlight hover:underline">
-            Browse all →
+          <Link to="/missions" className="text-sm text-primary hover:underline">
+            Explore all {CHALLENGES.length} missions
           </Link>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {DOMAINS.map((d) => {
             const domainStat = stats.domainScores.find((x) => x.domain === d.id);
             return (
@@ -190,37 +209,48 @@ function Index() {
                 key={d.id}
                 to="/missions"
                 search={{ domain: d.id }}
-                className="group rounded-xl border border-border bg-gradient-surface p-5 transition-colors hover:border-primary/60"
+                className="group flex flex-col justify-between rounded-xl border border-border bg-card p-5 transition-colors duration-150 hover:border-foreground/25 hover:bg-secondary/60"
               >
-                <div className="flex items-center justify-between">
-                  <d.icon className="h-5 w-5 text-highlight" aria-hidden />
-                  {domainStat && domainStat.attempts > 0 && (
-                    <span className="chip border-highlight/40 text-highlight font-mono">
-                      {domainStat.score}% eff
-                    </span>
-                  )}
+                <div>
+                  <div className="flex items-center justify-between">
+                    <d.icon
+                      className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground"
+                      strokeWidth={1.5}
+                      aria-hidden
+                    />
+                    {domainStat && domainStat.attempts > 0 && (
+                      <span className="font-mono text-xs text-primary tabular">
+                        {domainStat.score}%
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="mt-3 text-base font-medium text-foreground">{d.label}</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">{d.blurb}</p>
                 </div>
-                <h3 className="mt-3 font-semibold group-hover:text-highlight">{d.label}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{d.blurb}</p>
               </Link>
             );
           })}
         </div>
       </section>
 
-      {/* Featured Playable Missions */}
-      <section className="mx-auto max-w-6xl px-4 pb-20">
-        <div className="mb-4 flex items-end justify-between">
+      {/* Featured Missions */}
+      <section className="mx-auto max-w-6xl px-4 pb-20 sm:px-6">
+        <div className="mb-4 flex items-baseline justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-semibold">Featured Missions</h2>
-            <p className="text-sm text-muted-foreground">
-              Jump straight into playable challenges across prompt writing, auditing, workflows, and risk triage.
+            <h2 className="text-xl font-medium">Featured missions</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Interactive worksheets across prompt writing, auditing, pipelines, and risk triage
             </p>
           </div>
-          <Link to="/missions" className="text-sm font-medium text-highlight hover:underline">
-            All {CHALLENGES.length} missions →
+          <Link
+            to="/missions"
+            className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+          >
+            All missions
+            <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden />
           </Link>
         </div>
+
         <div className="grid gap-4 md:grid-cols-2">
           {featured.map((c) => (
             <MissionCard

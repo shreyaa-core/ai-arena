@@ -12,7 +12,6 @@ import {
   Plus,
   Send,
   ShieldAlert,
-  Sparkles,
   Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -102,7 +101,6 @@ export function ChallengeRunner({
     seconds: number;
   } | null>(null);
 
-  // Reset runner when switching challenges.
   useEffect(() => {
     setResponse(initialResponse(challenge));
     setSeconds(0);
@@ -112,7 +110,6 @@ export function ChallengeRunner({
     setOutcome(null);
   }, [challenge]);
 
-  // Live mission stopwatch while active.
   useEffect(() => {
     if (outcome) return;
     const id = window.setInterval(() => setSeconds((s) => s + 1), 1000);
@@ -157,8 +154,8 @@ export function ChallengeRunner({
       recordSubmission(sub);
       setOutcome({ evaluation, efficiency, seconds: Math.max(5, seconds) });
 
-      toast.success(`Grade ${efficiency.grade} • +${efficiency.xpEarned} XP`, {
-        description: `${efficiency.efficiency}% AI Efficiency (${evaluation.score}/100 rubric)`,
+      toast.success(`Grade ${efficiency.grade} (+${efficiency.xpEarned} XP)`, {
+        description: `${efficiency.efficiency}% AI efficiency (${evaluation.score}/100 rubric)`,
       });
 
       onCompleted?.({ evaluation, efficiency, submission: sub, seconds: Math.max(5, seconds) });
@@ -176,53 +173,54 @@ export function ChallengeRunner({
     setOutcome(null);
   };
 
-  const timeRatio = seconds / Math.max(60, parSeconds);
-  const timerColor =
-    timeRatio > 1 ? "text-warning border-warning/40" : "text-highlight border-highlight/40";
+  const overtime = seconds > parSeconds;
 
   return (
     <div className="space-y-6">
-      {/* Live Mission Game HUD */}
+      {/* Live Mission Telemetry Bar */}
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3">
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 text-xs">
           {modeLabel && (
-            <span className="chip border-primary/40 bg-primary/15 text-primary">{modeLabel}</span>
+            <span className="tag border-primary/40 bg-primary/15 text-foreground font-mono">
+              {modeLabel}
+            </span>
           )}
-          <span className="chip border-border bg-muted/60 text-foreground">
-            <domain.icon className="h-3 w-3 text-highlight" aria-hidden />
+          <span className="tag border-border bg-secondary text-foreground">
+            <domain.icon className="h-3.5 w-3.5 text-muted-foreground" strokeWidth={1.5} aria-hidden />
             {domain.label}
           </span>
-          <span className="chip border-border text-muted-foreground">
-            {TYPE_LABEL[challenge.type]}
-          </span>
-          <span className="chip border-border text-muted-foreground">{challenge.difficulty}</span>
+          <span className="text-muted-foreground">{TYPE_LABEL[challenge.type]}</span>
+          <span className="text-muted-foreground">{challenge.difficulty}</span>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <span className={cn("chip font-mono", timerColor)}>
-            <Clock className="h-3 w-3" aria-hidden />
+        <div className="flex flex-wrap items-center gap-3 text-xs">
+          <span
+            className={cn(
+              "keycap",
+              overtime ? "border-warning/40 text-warning" : "text-foreground",
+            )}
+          >
+            <Clock className="mr-1.5 h-3.5 w-3.5 text-muted-foreground" strokeWidth={1.5} aria-hidden />
             {formatDuration(seconds)} / {formatDuration(parSeconds)} par
           </span>
           {challenge.payload.kind === "text" && (
-            <span className="chip border-border font-mono text-muted-foreground">
-              <Sparkles className="h-3 w-3 text-primary" aria-hidden />
-              {turnsUsed === 0 ? "1-Shot Ready" : `Sim Runs: ${turnsUsed}`}
+            <span className="font-mono text-muted-foreground tabular">
+              {turnsUsed === 0 ? "1-shot ready" : `${turnsUsed} sim runs`}
             </span>
           )}
-          <span className="chip border-border font-mono text-muted-foreground">
-            <Lightbulb className="h-3 w-3 text-warning" aria-hidden />
-            Hints: {hintsShown}/{challenge.hints.length}
+          <span className="font-mono text-muted-foreground tabular">
+            Hints {hintsShown}/{challenge.hints.length}
           </span>
           <button
             type="button"
             onClick={() => toggleSavedChallenge(challenge.id)}
             aria-label={isSaved ? "Remove bookmark" : "Bookmark mission"}
             className={cn(
-              "rounded-md border border-border p-1.5 transition-colors hover:bg-muted",
+              "rounded-md border border-border p-1.5 transition-colors duration-150 hover:bg-secondary",
               isSaved ? "text-primary" : "text-muted-foreground",
             )}
           >
-            <Bookmark className="h-3.5 w-3.5" fill={isSaved ? "currentColor" : "none"} />
+            <Bookmark className="h-4 w-4" strokeWidth={1.5} fill={isSaved ? "currentColor" : "none"} />
           </button>
         </div>
       </div>
@@ -242,25 +240,23 @@ export function ChallengeRunner({
         <div className="grid gap-6 lg:grid-cols-12">
           {/* Left Mission Briefing */}
           <aside className="space-y-4 lg:col-span-5">
-            <div className="rounded-xl border border-border bg-gradient-surface p-5">
-              <h1 className="text-2xl font-bold">{challenge.title}</h1>
-              <p className="mt-2 text-sm text-muted-foreground">{challenge.scenario}</p>
+            <div className="rounded-xl border border-border bg-card p-5">
+              <h1 className="text-xl font-medium">{challenge.title}</h1>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                {challenge.scenario}
+              </p>
 
-              <div className="mt-4 rounded-lg border border-primary/30 bg-primary/10 p-3.5">
-                <div className="text-xs font-semibold uppercase tracking-wider text-highlight">
-                  Your Objective
-                </div>
-                <p className="mt-1 text-sm font-medium text-foreground">{challenge.task}</p>
+              <div className="mt-4 rounded-lg border border-border bg-secondary p-3.5">
+                <div className="text-xs font-medium text-muted-foreground">Objective</div>
+                <p className="mt-1 text-sm text-foreground">{challenge.task}</p>
               </div>
 
               <div className="mt-4">
-                <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Checklist
-                </div>
+                <div className="text-xs font-medium text-muted-foreground">Requirements</div>
                 <ul className="mt-2 space-y-1.5 text-sm">
                   {challenge.requirements.map((req) => (
                     <li key={req} className="flex items-start gap-2 text-muted-foreground">
-                      <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-highlight" aria-hidden />
+                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" strokeWidth={1.5} aria-hidden />
                       <span>{req}</span>
                     </li>
                   ))}
@@ -269,10 +265,10 @@ export function ChallengeRunner({
             </div>
 
             <div className="rounded-xl border border-border bg-card p-5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-sm font-semibold">
-                  <Lightbulb className="h-4 w-4 text-warning" aria-hidden />
-                  Tactical Hints
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                  <Lightbulb className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} aria-hidden />
+                  <span>Hints</span>
                 </div>
                 {hintsShown < challenge.hints.length && (
                   <Button
@@ -281,24 +277,24 @@ export function ChallengeRunner({
                     variant="outline"
                     onClick={() => setHintsShown((h) => Math.min(challenge.hints.length, h + 1))}
                   >
-                    <Eye className="h-3.5 w-3.5" aria-hidden />
-                    Reveal Hint (-18% hint score)
+                    <Eye className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden />
+                    Reveal hint (-18%)
                   </Button>
                 )}
               </div>
 
               {hintsShown === 0 ? (
                 <p className="mt-2 text-xs text-muted-foreground">
-                  Solve without hints to keep your 100% Zero-Assist efficiency bonus.
+                  Solve without hints to keep your 100% zero-assist bonus
                 </p>
               ) : (
                 <ul className="mt-3 space-y-2">
                   {challenge.hints.slice(0, hintsShown).map((hint, idx) => (
                     <li
                       key={idx}
-                      className="rounded-lg border border-warning/30 bg-warning/10 p-2.5 text-xs text-foreground"
+                      className="rounded-lg border border-border bg-secondary p-3 text-xs leading-relaxed text-foreground"
                     >
-                      <span className="font-semibold text-warning">Hint {idx + 1}: </span>
+                      <span className="font-mono text-muted-foreground">Hint {idx + 1}: </span>
                       {hint}
                     </li>
                   ))}
@@ -307,13 +303,13 @@ export function ChallengeRunner({
             </div>
           </aside>
 
-          {/* Right Interactive Arena Workspace */}
+          {/* Right Paper Worksheet */}
           <section className="rounded-xl border border-paper-border bg-paper p-5 text-paper-foreground lg:col-span-7">
             {challenge.payload.kind === "text" && response.kind === "text" && (
               <div className="space-y-4">
                 {challenge.payload.source && (
                   <div className="rounded-lg border border-paper-border bg-paper-muted p-4">
-                    <div className="text-xs font-semibold uppercase tracking-wider text-paper-muted-foreground">
+                    <div className="text-xs font-medium text-paper-muted-foreground">
                       {challenge.payload.source.label}
                     </div>
                     <pre className="mt-1.5 whitespace-pre-wrap font-sans text-sm">
@@ -324,10 +320,10 @@ export function ChallengeRunner({
 
                 <div>
                   <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                    <label htmlFor="prompt-editor" className="text-sm font-semibold">
-                      Your Prompt / Edited Output
+                    <label htmlFor="prompt-editor" className="text-sm font-medium">
+                      Your prompt or edited output
                     </label>
-                    <div className="flex items-center gap-3 font-mono text-xs text-paper-muted-foreground">
+                    <div className="flex items-center gap-3 font-mono text-xs text-paper-muted-foreground tabular">
                       <span>
                         {wordCount(response.text)} / ~{challenge.payload.minWords} words
                       </span>
@@ -338,21 +334,21 @@ export function ChallengeRunner({
                     id="prompt-editor"
                     value={response.text}
                     onChange={(e) => setResponse({ kind: "text", text: e.target.value })}
-                    placeholder={challenge.payload.placeholder}
+                    placeholder={challenge.payload.placeholder.replace("…", "")}
                     rows={10}
                     className="border-paper-border bg-white text-paper-foreground placeholder:text-paper-muted-foreground/70"
                   />
                 </div>
 
                 {simulation && (
-                  <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 text-sm">
+                  <div className="rounded-lg border border-paper-border bg-paper-muted p-4 text-sm">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="flex items-center gap-1.5 font-semibold text-primary">
-                        <Bot className="h-4 w-4" aria-hidden />
-                        Deterministic AI Simulator Preview
+                      <span className="flex items-center gap-2 font-medium text-paper-foreground">
+                        <Bot className="h-4 w-4 text-paper-muted-foreground" strokeWidth={1.5} aria-hidden />
+                        Simulated AI output (practice preview)
                       </span>
-                      <span className="font-mono text-xs font-semibold">
-                        Est. Quality: {simulation.estimatedQuality}/100
+                      <span className="font-mono text-xs font-medium tabular">
+                        Est. quality {simulation.estimatedQuality}/100
                       </span>
                     </div>
                     <p className="mt-2 whitespace-pre-wrap text-paper-foreground">
@@ -360,8 +356,8 @@ export function ChallengeRunner({
                     </p>
                     {simulation.failureModes.length > 0 && (
                       <div className="mt-3 border-t border-paper-border pt-2.5">
-                        <div className="text-xs font-semibold text-amber-700">
-                          Potential AI Failure Modes Detected:
+                        <div className="text-xs font-medium text-amber-800">
+                          Failure modes detected
                         </div>
                         <ul className="mt-1 space-y-1 text-xs text-paper-muted-foreground">
                           {simulation.failureModes.map((f, i) => (
@@ -380,18 +376,18 @@ export function ChallengeRunner({
                     onClick={handleSimulate}
                     disabled={!response.text.trim()}
                   >
-                    <Play className="h-4 w-4" aria-hidden />
-                    Test in AI Simulator
+                    <Play className="h-4 w-4" strokeWidth={1.5} aria-hidden />
+                    Test in simulator
                   </Button>
 
                   <Button
                     type="button"
-                    variant="hero"
+                    variant="paperPrimary"
                     onClick={handleSubmit}
                     disabled={!canSubmit(challenge, response) || submitting}
                   >
-                    <Send className="h-4 w-4" aria-hidden />
-                    {turnsUsed === 0 ? "Submit One-Shot" : "Submit Final Answer"}
+                    <Send className="h-4 w-4" strokeWidth={1.5} aria-hidden />
+                    {turnsUsed === 0 ? "Submit one-shot" : "Submit final answer"}
                   </Button>
                 </div>
               </div>
@@ -400,16 +396,16 @@ export function ChallengeRunner({
             {challenge.payload.kind === "flags" && response.kind === "flags" && (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h2 className="font-semibold">{challenge.payload.intro}</h2>
-                  <span className="chip border-paper-border bg-paper-muted font-mono">
+                  <h2 className="text-base font-medium">{challenge.payload.intro}</h2>
+                  <span className="font-mono text-xs text-paper-muted-foreground tabular">
                     {response.ids.length} flagged
                   </span>
                 </div>
                 <p className="text-xs text-paper-muted-foreground">
-                  Click any sentence that is fabricated, wrong, or unsupported. Leave accurate statements unflagged.
+                  Select any sentence that is fabricated, wrong, or unsupported. Leave accurate statements unflagged.
                 </p>
 
-                <div className="space-y-2.5">
+                <div className="space-y-2">
                   {challenge.payload.segments.map((seg, i) => {
                     const active = response.ids.includes(seg.id);
                     return (
@@ -425,23 +421,23 @@ export function ChallengeRunner({
                           })
                         }
                         className={cn(
-                          "flex w-full items-start justify-between gap-3 rounded-lg border p-3.5 text-left text-sm transition-colors",
+                          "flex w-full items-start justify-between gap-3 rounded-lg border p-3.5 text-left text-sm transition-colors duration-150",
                           active
-                            ? "border-destructive bg-destructive/10 text-paper-foreground"
+                            ? "border-rose-300 bg-rose-50 text-paper-foreground"
                             : "border-paper-border bg-white hover:bg-paper-muted/50",
                         )}
                       >
                         <div className="flex items-start gap-2.5">
-                          <span className="mt-0.5 font-mono text-xs text-paper-muted-foreground">
+                          <span className="mt-0.5 font-mono text-xs text-paper-muted-foreground tabular">
                             {i + 1}.
                           </span>
                           <span>{seg.text}</span>
                         </div>
                         <span
                           className={cn(
-                            "chip shrink-0",
+                            "tag shrink-0",
                             active
-                              ? "border-destructive/50 bg-destructive/15 text-destructive"
+                              ? "border-rose-300 bg-rose-100 text-rose-800"
                               : "border-paper-border text-paper-muted-foreground",
                           )}
                         >
@@ -453,9 +449,9 @@ export function ChallengeRunner({
                 </div>
 
                 <div className="flex justify-end pt-2">
-                  <Button type="button" variant="hero" onClick={handleSubmit} disabled={submitting}>
-                    <Send className="h-4 w-4" aria-hidden />
-                    Submit Audit ({response.ids.length} flagged)
+                  <Button type="button" variant="paperPrimary" onClick={handleSubmit} disabled={submitting}>
+                    <Send className="h-4 w-4" strokeWidth={1.5} aria-hidden />
+                    Submit audit ({response.ids.length} flagged)
                   </Button>
                 </div>
               </div>
@@ -467,7 +463,7 @@ export function ChallengeRunner({
                   {challenge.payload.prompt}
                 </div>
 
-                <div className="space-y-2.5">
+                <div className="space-y-2">
                   {challenge.payload.options.map((opt) => {
                     const selected = response.id === opt.id;
                     return (
@@ -476,19 +472,19 @@ export function ChallengeRunner({
                         type="button"
                         onClick={() => setResponse({ ...response, id: opt.id })}
                         className={cn(
-                          "w-full rounded-lg border p-4 text-left transition-colors",
+                          "w-full rounded-lg border p-4 text-left transition-colors duration-150",
                           selected
-                            ? "border-primary bg-primary/10"
+                            ? "border-blue-400 bg-blue-50/70"
                             : "border-paper-border bg-white hover:bg-paper-muted/50",
                         )}
                       >
                         <div className="flex items-center justify-between">
-                          <span className="text-sm font-semibold">{opt.label}</span>
+                          <span className="text-sm font-medium">{opt.label}</span>
                           <span
                             className={cn(
                               "h-4 w-4 rounded-full border",
                               selected
-                                ? "border-primary bg-primary"
+                                ? "border-blue-700 bg-blue-700"
                                 : "border-paper-muted-foreground/40",
                             )}
                           />
@@ -500,14 +496,14 @@ export function ChallengeRunner({
                 </div>
 
                 <div>
-                  <label htmlFor="choice-justify" className="text-sm font-semibold">
-                    Why is this option strongest? (1–2 concise sentences)
+                  <label htmlFor="choice-justify" className="text-sm font-medium">
+                    Why is this option strongest (1–2 sentences)
                   </label>
                   <Textarea
                     id="choice-justify"
                     value={response.justification}
                     onChange={(e) => setResponse({ ...response, justification: e.target.value })}
-                    placeholder="Explain what makes it reliable and testable…"
+                    placeholder="Explain what makes it reliable and testable"
                     rows={3}
                     className="mt-1.5 border-paper-border bg-white text-paper-foreground"
                   />
@@ -516,12 +512,12 @@ export function ChallengeRunner({
                 <div className="flex justify-end pt-2">
                   <Button
                     type="button"
-                    variant="hero"
+                    variant="paperPrimary"
                     onClick={handleSubmit}
                     disabled={!canSubmit(challenge, response) || submitting}
                   >
-                    <Send className="h-4 w-4" aria-hidden />
-                    Submit Selection
+                    <Send className="h-4 w-4" strokeWidth={1.5} aria-hidden />
+                    Submit selection
                   </Button>
                 </div>
               </div>
@@ -531,21 +527,20 @@ export function ChallengeRunner({
               <div className="space-y-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>
-                    <h2 className="font-semibold">Goal: {challenge.payload.goal}</h2>
+                    <h2 className="text-base font-medium">Goal: {challenge.payload.goal}</h2>
                     <p className="text-xs text-paper-muted-foreground">
                       Add safe steps into your pipeline and arrange them in execution order. Leave out harmful steps.
                     </p>
                   </div>
-                  <span className="chip border-paper-border bg-paper-muted font-mono">
-                    {response.ids.length} steps selected
+                  <span className="font-mono text-xs text-paper-muted-foreground tabular">
+                    {response.ids.length} selected
                   </span>
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
-                  {/* Available Steps */}
                   <div className="space-y-2">
-                    <div className="text-xs font-semibold uppercase tracking-wider text-paper-muted-foreground">
-                      Available Steps
+                    <div className="text-xs font-medium text-paper-muted-foreground">
+                      Available steps
                     </div>
                     {challenge.payload.steps
                       .filter((s) => !response.ids.includes(s.id))
@@ -567,21 +562,20 @@ export function ChallengeRunner({
                               setResponse({ kind: "workflow", ids: [...response.ids, step.id] })
                             }
                           >
-                            <Plus className="h-3.5 w-3.5" aria-hidden />
+                            <Plus className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden />
                             Add
                           </Button>
                         </div>
                       ))}
                   </div>
 
-                  {/* Active Ordered Pipeline */}
                   <div className="space-y-2">
-                    <div className="text-xs font-semibold uppercase tracking-wider text-paper-muted-foreground">
-                      Your Pipeline Order
+                    <div className="text-xs font-medium text-paper-muted-foreground">
+                      Pipeline order
                     </div>
                     {response.ids.length === 0 ? (
                       <div className="rounded-lg border border-dashed border-paper-border p-6 text-center text-xs text-paper-muted-foreground">
-                        Add steps from the left to assemble your workflow.
+                        Add steps from the left to assemble your workflow
                       </div>
                     ) : (
                       response.ids.map((id, idx) => {
@@ -593,10 +587,10 @@ export function ChallengeRunner({
                         return (
                           <div
                             key={id}
-                            className="flex items-center justify-between gap-2 rounded-lg border border-primary/40 bg-primary/5 p-3"
+                            className="flex items-center justify-between gap-2 rounded-lg border border-blue-300 bg-blue-50/60 p-3"
                           >
                             <div className="flex items-start gap-2">
-                              <span className="mt-0.5 font-mono text-xs font-bold text-primary">
+                              <span className="mt-0.5 font-mono text-xs font-medium text-blue-700 tabular">
                                 {idx + 1}.
                               </span>
                               <div>
@@ -623,7 +617,7 @@ export function ChallengeRunner({
                                 }}
                                 className="rounded p-1 hover:bg-paper-muted disabled:opacity-30"
                               >
-                                <ArrowUp className="h-3.5 w-3.5" />
+                                <ArrowUp className="h-3.5 w-3.5" strokeWidth={1.5} />
                               </button>
                               <button
                                 type="button"
@@ -641,7 +635,7 @@ export function ChallengeRunner({
                                 }}
                                 className="rounded p-1 hover:bg-paper-muted disabled:opacity-30"
                               >
-                                <ArrowDown className="h-3.5 w-3.5" />
+                                <ArrowDown className="h-3.5 w-3.5" strokeWidth={1.5} />
                               </button>
                               <button
                                 type="button"
@@ -652,9 +646,9 @@ export function ChallengeRunner({
                                     ids: response.ids.filter((x) => x !== id),
                                   })
                                 }
-                                className="rounded p-1 text-destructive hover:bg-destructive/10"
+                                className="rounded p-1 text-rose-600 hover:bg-rose-50"
                               >
-                                <Trash2 className="h-3.5 w-3.5" />
+                                <Trash2 className="h-3.5 w-3.5" strokeWidth={1.5} />
                               </button>
                             </div>
                           </div>
@@ -667,12 +661,12 @@ export function ChallengeRunner({
                 <div className="flex justify-end pt-2">
                   <Button
                     type="button"
-                    variant="hero"
+                    variant="paperPrimary"
                     onClick={handleSubmit}
                     disabled={!canSubmit(challenge, response) || submitting}
                   >
-                    <Send className="h-4 w-4" aria-hidden />
-                    Deploy Pipeline
+                    <Send className="h-4 w-4" strokeWidth={1.5} aria-hidden />
+                    Deploy pipeline
                   </Button>
                 </div>
               </div>
@@ -681,16 +675,16 @@ export function ChallengeRunner({
             {challenge.payload.kind === "risk" && response.kind === "risk" && (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h2 className="flex items-center gap-2 font-semibold">
-                    <ShieldAlert className="h-4 w-4 text-primary" aria-hidden />
-                    Classify Each Case
+                  <h2 className="flex items-center gap-2 text-base font-medium">
+                    <ShieldAlert className="h-4 w-4 text-paper-muted-foreground" strokeWidth={1.5} aria-hidden />
+                    Classify each case
                   </h2>
-                  <span className="chip border-paper-border bg-paper-muted font-mono">
+                  <span className="font-mono text-xs text-paper-muted-foreground tabular">
                     {Object.keys(response.answers).length} / {challenge.payload.items.length} rated
                   </span>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-2.5">
                   {challenge.payload.items.map((item) => {
                     const current = response.answers[item.id];
                     return (
@@ -704,10 +698,10 @@ export function ChallengeRunner({
                             const active = current === lvl;
                             const activeStyle =
                               lvl === "high"
-                                ? "border-destructive bg-destructive text-white"
+                                ? "border-rose-700 bg-rose-600 text-white"
                                 : lvl === "medium"
-                                  ? "border-warning bg-warning text-paper-foreground"
-                                  : "border-success bg-success text-paper-foreground";
+                                  ? "border-amber-600 bg-amber-500 text-white"
+                                  : "border-emerald-700 bg-emerald-600 text-white";
                             return (
                               <button
                                 key={lvl}
@@ -719,7 +713,7 @@ export function ChallengeRunner({
                                   })
                                 }
                                 className={cn(
-                                  "rounded-md border px-3 py-1 text-xs font-semibold capitalize transition-colors",
+                                  "rounded-md border px-3 py-1 text-xs font-medium capitalize transition-colors duration-150",
                                   active
                                     ? activeStyle
                                     : "border-paper-border bg-paper-muted/50 text-paper-muted-foreground hover:bg-paper-muted",
@@ -738,12 +732,12 @@ export function ChallengeRunner({
                 <div className="flex justify-end pt-2">
                   <Button
                     type="button"
-                    variant="hero"
+                    variant="paperPrimary"
                     onClick={handleSubmit}
                     disabled={!canSubmit(challenge, response) || submitting}
                   >
-                    <Send className="h-4 w-4" aria-hidden />
-                    Submit Risk Triage
+                    <Send className="h-4 w-4" strokeWidth={1.5} aria-hidden />
+                    Submit risk triage
                   </Button>
                 </div>
               </div>

@@ -1,13 +1,13 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Flame, Gauge, Medal, Swords, Target, User, Zap } from "lucide-react";
+import { Flame, Medal, Swords, Target, User, Zap } from "lucide-react";
 import { computePlayerStats } from "@/lib/arena/game";
 import { useArenaState } from "@/lib/arena/storage";
 import { cn } from "@/lib/utils";
 
 export function Logo() {
   return (
-    <Link to="/" className="flex items-center gap-2 font-display text-lg font-semibold tracking-tight">
-      <img src="/favicon.svg" alt="" className="h-7 w-7" />
+    <Link to="/" className="flex items-center gap-2.5 text-base font-medium tracking-tight text-foreground">
+      <img src="/favicon.svg" alt="" className="h-6 w-6" />
       <span>AI Arena</span>
     </Link>
   );
@@ -27,8 +27,8 @@ export function SiteHeader() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 px-4">
+    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-sm">
+      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <div className="flex items-center gap-6">
           <Logo />
           <nav aria-label="Primary" className="hidden items-center gap-1 md:flex">
@@ -40,43 +40,39 @@ export function SiteHeader() {
                   key={item.to}
                   to={item.to}
                   className={cn(
-                    "inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+                    "inline-flex h-8 items-center gap-2 rounded-md px-3 text-sm transition-colors duration-150",
                     active
-                      ? "bg-primary/15 text-foreground"
-                      : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
+                      ? "bg-secondary text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
+                      : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground",
                   )}
                 >
-                  <item.icon className="h-3.5 w-3.5" aria-hidden />
-                  {item.label}
+                  <item.icon className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} aria-hidden />
+                  <span>{item.label}</span>
                 </Link>
               );
             })}
           </nav>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3 text-xs">
           {stats.currentStreak > 0 && (
             <span
-              className="chip border-warning/40 bg-warning/10 text-warning"
+              className="hidden items-center gap-1 font-mono text-muted-foreground tabular sm:inline-flex"
               title="Active 70%+ efficiency streak"
             >
-              <Flame className="h-3 w-3" aria-hidden />
+              <Flame className="h-3.5 w-3.5 text-warning" strokeWidth={1.5} aria-hidden />
               {stats.currentStreak}x
             </span>
           )}
-          <span
-            className="hidden chip border-highlight/40 bg-highlight/10 text-highlight sm:inline-flex"
-            title="Average AI Efficiency Score"
-          >
-            <Gauge className="h-3 w-3" aria-hidden />
-            {stats.completedIds.length ? `${stats.averageEfficiency}% Eff` : "Unranked"}
+          <span className="hidden font-mono text-muted-foreground tabular sm:inline">
+            {stats.completedIds.length ? `${stats.averageEfficiency}% eff` : "Unranked"}
           </span>
           <Link
             to="/profile"
-            className="chip border-primary/40 bg-primary/15 text-foreground transition-colors hover:bg-primary/25"
+            className="inline-flex h-8 items-center gap-2 rounded-md border border-border bg-secondary px-2.5 font-mono text-xs text-foreground tabular transition-colors duration-150 hover:bg-accent"
             title={`${stats.rank.title} — ${stats.totalXp} XP`}
           >
-            <span className="font-mono text-[11px] text-primary">Lv.{stats.rank.level}</span>
+            <span className="text-muted-foreground">Lv.{stats.rank.level}</span>
             <span>{stats.totalXp} XP</span>
           </Link>
         </div>
@@ -84,7 +80,7 @@ export function SiteHeader() {
 
       <nav
         aria-label="Mobile navigation"
-        className="flex items-center justify-around border-t border-border/60 px-2 py-1.5 md:hidden"
+        className="flex items-center justify-around border-t border-border px-2 py-1.5 md:hidden"
       >
         {NAV_ITEMS.map((item) => {
           const active = item.to === "/" ? pathname === "/" : pathname.startsWith(item.to);
@@ -93,12 +89,12 @@ export function SiteHeader() {
               key={item.to}
               to={item.to}
               className={cn(
-                "flex items-center gap-1 rounded px-2 py-1 text-xs font-medium",
-                active ? "bg-primary/15 text-foreground" : "text-muted-foreground",
+                "flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs transition-colors",
+                active ? "bg-secondary text-foreground" : "text-muted-foreground",
               )}
             >
-              <item.icon className="h-3.5 w-3.5" aria-hidden />
-              {item.label}
+              <item.icon className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden />
+              <span>{item.label}</span>
             </Link>
           );
         })}
@@ -110,7 +106,7 @@ export function SiteHeader() {
 export function SiteFooter() {
   return (
     <footer className="border-t border-border py-6 text-center text-xs text-muted-foreground">
-      AI Arena is an indicative practice game &amp; rubric assessment — not a certified or scientifically validated credential.
+      AI Arena is an indicative practice game and rubric assessment — not a certified credential
     </footer>
   );
 }

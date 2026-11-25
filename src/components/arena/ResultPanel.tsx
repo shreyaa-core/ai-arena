@@ -76,7 +76,7 @@ export function ResultPanel({
             { label: "Turn economy (10%)", value: efficiency.turnScore },
             { label: "No-hint bonus (10%)", value: efficiency.hintScore },
           ].map((pillar) => (
-            <div key={pillar.label} className="rounded-lg border border-border bg-background/60 p-3">
+            <div key={pillar.label} className="rounded-lg border border-border bg-background/70 p-3">
               <div className="flex items-center justify-between text-xs text-muted-foreground">
                 <span>{pillar.label}</span>
                 <span className="font-mono font-medium text-foreground tabular">{pillar.value}</span>
@@ -88,50 +88,50 @@ export function ResultPanel({
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <div className="rounded-xl border border-paper-border bg-paper p-5 text-paper-foreground">
+        <div className="rounded-xl border border-border bg-card p-5 text-foreground">
           <h3 className="flex items-center gap-2 text-base font-medium">
-            <CheckCircle2 className="h-4 w-4 text-emerald-600" strokeWidth={1.5} aria-hidden />
+            <CheckCircle2 className="h-4 w-4 text-success" strokeWidth={1.5} aria-hidden />
             Strengths detected
           </h3>
           {evaluation.strengths.length > 0 ? (
-            <ul className="mt-3 space-y-2 text-sm">
+            <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
               {evaluation.strengths.map((s, i) => (
                 <li key={i} className="flex items-start gap-2">
-                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-600" />
-                  <span>{s}</span>
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-success" />
+                  <span className="text-foreground">{s}</span>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="mt-3 text-sm text-paper-muted-foreground">
+            <p className="mt-3 text-sm text-muted-foreground">
               No strong rubric signals detected yet — try adding concrete constraints and verification cues
             </p>
           )}
         </div>
 
-        <div className="rounded-xl border border-paper-border bg-paper p-5 text-paper-foreground">
+        <div className="rounded-xl border border-border bg-card p-5 text-foreground">
           <h3 className="flex items-center gap-2 text-base font-medium">
-            <TrendingUp className="h-4 w-4 text-blue-700" strokeWidth={1.5} aria-hidden />
+            <TrendingUp className="h-4 w-4 text-highlight" strokeWidth={1.5} aria-hidden />
             How to improve efficiency
           </h3>
           {evaluation.improvements.length > 0 ? (
             <ul className="mt-3 space-y-2 text-sm">
               {evaluation.improvements.map((imp, i) => (
                 <li key={i} className="flex items-start gap-2">
-                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-700" />
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-highlight" />
                   <span>{imp}</span>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="mt-3 text-sm text-paper-muted-foreground">
+            <p className="mt-3 text-sm text-muted-foreground">
               Clean execution — every rubric requirement was satisfied
             </p>
           )}
         </div>
       </div>
 
-      <div className="rounded-xl border border-paper-border bg-paper p-5 text-paper-foreground">
+      <div className="rounded-xl border border-border bg-card p-5 text-foreground">
         <h3 className="text-base font-medium tabular">
           Rubric breakdown ({evaluation.score}/100)
         </h3>
@@ -142,12 +142,12 @@ export function ResultPanel({
               <div key={c.criterion} className="space-y-1">
                 <div className="flex items-center justify-between text-sm">
                   <span className="font-medium">{criterionLabel(c.criterion)}</span>
-                  <span className="font-mono text-xs text-paper-muted-foreground tabular">
+                  <span className="font-mono text-xs text-highlight tabular">
                     {c.score} / {c.max} ({pct}%)
                   </span>
                 </div>
-                <Progress value={pct} className="h-1.5 bg-paper-muted" />
-                <p className="text-xs text-paper-muted-foreground">{c.feedback}</p>
+                <Progress value={pct} className="h-1.5" />
+                <p className="text-xs text-muted-foreground">{c.feedback}</p>
               </div>
             );
           })}
@@ -155,22 +155,22 @@ export function ResultPanel({
       </div>
 
       {evaluation.details && evaluation.details.length > 0 && (
-        <div className="rounded-xl border border-paper-border bg-paper p-5 text-paper-foreground">
+        <div className="rounded-xl border border-border bg-card p-5 text-foreground">
           <h3 className="text-base font-medium">Answer key and item review</h3>
           <div className="mt-3 space-y-2">
             {evaluation.details.map((d) => (
               <div
                 key={d.id}
-                className="flex items-start gap-2.5 rounded-lg border border-paper-border bg-paper-muted/50 p-3 text-sm"
+                className="flex items-start gap-2.5 rounded-lg border border-border bg-background/60 p-3 text-sm"
               >
                 {d.ok ? (
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" strokeWidth={1.5} aria-hidden />
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" strokeWidth={1.5} aria-hidden />
                 ) : (
-                  <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-600" strokeWidth={1.5} aria-hidden />
+                  <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" strokeWidth={1.5} aria-hidden />
                 )}
                 <div>
                   <div className="font-medium">{d.label}</div>
-                  <div className="text-xs text-paper-muted-foreground">{d.note}</div>
+                  <div className="text-xs text-muted-foreground">{d.note}</div>
                 </div>
               </div>
             ))}

@@ -85,25 +85,25 @@ function BlitzPage() {
             return (
               <div
                 key={preset.id}
-                className="flex flex-col justify-between rounded-xl border border-paper-border bg-paper p-5 text-paper-foreground"
+                className="flex flex-col justify-between rounded-xl border border-border bg-card p-5 text-foreground transition-colors hover:border-highlight/50"
               >
                 <div>
-                  <div className="flex items-center justify-between text-xs text-paper-muted-foreground">
-                    <span>3 rounds</span>
-                    <span className="inline-flex items-center gap-1 font-mono tabular">
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span className="text-nebula font-mono">3 rounds</span>
+                    <span className="inline-flex items-center gap-1 font-mono text-highlight tabular">
                       <Clock className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden />
                       {totalPar}m par
                     </span>
                   </div>
                   <h2 className="mt-3 text-base font-medium">{preset.name}</h2>
-                  <p className="mt-1.5 text-sm leading-relaxed text-paper-muted-foreground">
+                  <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
                     {preset.description}
                   </p>
                 </div>
 
                 <Button
                   type="button"
-                  variant="paperPrimary"
+                  variant="hero"
                   className="mt-5 w-full"
                   onClick={() => startBlitz(preset)}
                 >

@@ -21,9 +21,9 @@ const buttonVariants = cva(
         hero: "bg-primary text-primary-foreground font-semibold shadow-[0_0_22px_-4px_oklch(0.515_0.235_272/0.65)] hover:brightness-110",
         subtle: "border border-border bg-card text-foreground hover:border-highlight/50 hover:bg-secondary",
         paper:
-          "border border-paper-border bg-white text-paper-foreground shadow-[0_1px_2px_rgba(3,7,18,0.06)] hover:bg-paper-muted",
+          "border border-primary/45 bg-secondary text-foreground hover:border-highlight/70 hover:bg-accent",
         paperPrimary:
-          "bg-paper-foreground text-paper shadow-[0_1px_2px_rgba(3,7,18,0.12)] hover:bg-primary hover:text-primary-foreground",
+          "bg-primary text-primary-foreground font-semibold shadow-[0_0_20px_-4px_oklch(0.515_0.235_272/0.6)] hover:brightness-110",
       },
       size: {
         default: "h-9 px-4 py-2",

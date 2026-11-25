@@ -8,12 +8,12 @@ import type { Challenge, Difficulty, Grade, Submission } from "@/lib/arena/types
 import { cn } from "@/lib/utils";
 
 const DIFF_DOT: Record<Difficulty, string> = {
-  Beginner: "bg-[#0891b2]",
-  Intermediate: "bg-[#4F46E5]",
-  Advanced: "bg-[#A855F7]",
+  Beginner: "bg-highlight",
+  Intermediate: "bg-primary",
+  Advanced: "bg-nebula",
 };
 
-const GRADE_STYLE_DARK: Record<Grade, string> = {
+const GRADE_STYLE: Record<Grade, string> = {
   S: "border-highlight/60 bg-highlight/15 text-highlight",
   A: "border-primary/70 bg-primary/25 text-foreground",
   B: "border-nebula/60 bg-nebula/20 text-nebula",
@@ -21,29 +21,19 @@ const GRADE_STYLE_DARK: Record<Grade, string> = {
   D: "border-destructive/60 bg-destructive/20 text-destructive",
 };
 
-const GRADE_STYLE_PAPER: Record<Grade, string> = {
-  S: "border-cyan-500 bg-cyan-50 text-cyan-900",
-  A: "border-indigo-500 bg-indigo-50 text-indigo-900",
-  B: "border-purple-500 bg-purple-50 text-purple-900",
-  C: "border-amber-500 bg-amber-50 text-amber-900",
-  D: "border-rose-500 bg-rose-50 text-rose-900",
-};
-
 export function GradeBadge({
   grade,
   size = "sm",
-  surface = "dark",
 }: {
   grade: Grade;
   size?: "sm" | "lg";
   surface?: "dark" | "paper";
 }) {
-  const styles = surface === "paper" ? GRADE_STYLE_PAPER : GRADE_STYLE_DARK;
   return (
     <span
       className={cn(
         "inline-flex items-center justify-center rounded-md border font-mono font-semibold tabular",
-        styles[grade],
+        GRADE_STYLE[grade],
         size === "lg" ? "h-12 w-12 text-xl" : "h-7 w-7 text-xs",
       )}
     >
@@ -66,15 +56,15 @@ export function MissionCard({
   const grade = bestSubmission ? (bestSubmission.grade ?? gradeFromScore(eff!)) : null;
 
   return (
-    <article className="flex flex-col justify-between rounded-xl border border-paper-border bg-paper p-5 text-paper-foreground shadow-[0_2px_10px_rgba(3,7,18,0.22)] transition-[border-color,box-shadow] duration-150 hover:border-primary/50 hover:shadow-[0_8px_24px_rgba(79,70,229,0.22)]">
+    <article className="flex flex-col justify-between rounded-xl border border-border bg-card p-5 text-foreground transition-[border-color,box-shadow] duration-150 hover:border-highlight/50 hover:shadow-[0_8px_24px_rgba(79,70,229,0.22)]">
       <div>
         <div className="flex items-start justify-between gap-2">
-          <div className="flex flex-wrap items-center gap-2 text-xs text-paper-muted-foreground">
-            <span className="tag border-paper-border bg-paper-muted text-paper-foreground">
-              <domain.icon className="h-3.5 w-3.5 text-primary" strokeWidth={1.5} aria-hidden />
+          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            <span className="tag border-border bg-secondary text-foreground">
+              <domain.icon className="h-3.5 w-3.5 text-highlight" strokeWidth={1.5} aria-hidden />
               {domain.label}
             </span>
-            <span className="tag border-paper-border bg-white text-paper-foreground">
+            <span className="tag border-border bg-background/60 text-foreground">
               <span className={cn("h-1.5 w-1.5 rounded-full", DIFF_DOT[challenge.difficulty])} aria-hidden />
               {challenge.difficulty}
             </span>
@@ -89,47 +79,47 @@ export function MissionCard({
             onClick={() => toggleSavedChallenge(challenge.id)}
             aria-label={isSaved ? "Remove bookmark" : "Bookmark mission"}
             className={cn(
-              "rounded-md p-1.5 transition-colors duration-150 hover:bg-paper-muted",
-              isSaved ? "text-primary" : "text-paper-muted-foreground",
+              "rounded-md p-1.5 transition-colors duration-150 hover:bg-secondary",
+              isSaved ? "text-highlight" : "text-muted-foreground",
             )}
           >
             <Bookmark className="h-4 w-4" strokeWidth={1.5} fill={isSaved ? "currentColor" : "none"} />
           </button>
         </div>
 
-        <h3 className="mt-3 text-base font-semibold leading-snug text-paper-foreground">
+        <h3 className="mt-3 text-base font-semibold leading-snug text-foreground">
           {challenge.title}
         </h3>
-        <p className="mt-1.5 text-sm leading-relaxed text-paper-muted-foreground">
+        <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
           {challenge.summary}
         </p>
       </div>
 
-      <div className="mt-5 flex items-center justify-between gap-3 border-t border-paper-border pt-3.5">
+      <div className="mt-5 flex items-center justify-between gap-3 border-t border-border pt-3.5">
         {bestSubmission && grade !== null && eff !== null ? (
           <div className="flex items-center gap-2.5">
-            <GradeBadge grade={grade} surface="paper" />
+            <GradeBadge grade={grade} />
             <div className="text-xs tabular">
-              <div className="flex items-center gap-1 font-medium text-paper-foreground">
+              <div className="flex items-center gap-1 font-medium text-foreground">
                 {bestSubmission.score >= 50 ? (
-                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" strokeWidth={1.5} aria-hidden />
+                  <CheckCircle2 className="h-3.5 w-3.5 text-success" strokeWidth={1.5} aria-hidden />
                 ) : (
-                  <AlertCircle className="h-3.5 w-3.5 text-rose-600" strokeWidth={1.5} aria-hidden />
+                  <AlertCircle className="h-3.5 w-3.5 text-destructive" strokeWidth={1.5} aria-hidden />
                 )}
-                <span>{eff}% efficiency</span>
+                <span className="text-highlight">{eff}% efficiency</span>
               </div>
-              <div className="font-mono text-paper-muted-foreground">
+              <div className="font-mono text-muted-foreground">
                 Rubric {bestSubmission.score}/100
               </div>
             </div>
           </div>
         ) : (
-          <span className="font-mono text-xs text-paper-muted-foreground tabular">
+          <span className="font-mono text-xs text-nebula tabular">
             Up to +{Math.round(100 * (challenge.difficulty === "Advanced" ? 1.5 : challenge.difficulty === "Intermediate" ? 1.25 : 1) + 80)} XP
           </span>
         )}
 
-        <Button asChild size="sm" variant={bestSubmission ? "paper" : "paperPrimary"}>
+        <Button asChild size="sm" variant={bestSubmission ? "outline" : "hero"}>
           <Link to="/play/$id" params={{ id: challenge.id }}>
             {bestSubmission ? "Replay" : "Start mission"}
             <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden />

@@ -89,11 +89,11 @@
   --nebula: oklch(0.625 0.245 304);
   --success: oklch(0.77 0.15 162);
   --warning: oklch(0.82 0.16 82);
-  --paper: oklch(0.985 0.005 248);
-  --paper-foreground: oklch(0.128 0.025 256);
-  --paper-muted: oklch(0.945 0.01 250);
-  --paper-muted-foreground: oklch(0.42 0.035 256);
-  --paper-border: oklch(0.205 0.028 258 / 0.16);
+  --paper: oklch(0.205 0.028 258);
+  --paper-foreground: oklch(0.97 0.008 248);
+  --paper-muted: oklch(0.16 0.025 256);
+  --paper-muted-foreground: oklch(0.73 0.025 252);
+  --paper-border: oklch(0.72 0.04 260 / 0.22);
   --chart-1: oklch(0.81 0.14 205);
   --chart-2: oklch(0.625 0.245 304);
   --chart-3: oklch(0.515 0.235 272);

@@ -1,3 +1,4 @@
+import { generateDynamicBriefChallenge, generateDynamicVisualChallenge } from "./dynamicChallenges";
 import type { Challenge } from "./types";
 
 export const CHALLENGES: Challenge[] = [
@@ -670,6 +671,8 @@ export const CHALLENGES: Challenge[] = [
       ],
     },
   },
+  generateDynamicVisualChallenge(101),
+  generateDynamicBriefChallenge(202),
 ];
 
 export const challengeById = (id: string) => CHALLENGES.find((c) => c.id === id);

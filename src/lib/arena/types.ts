@@ -26,11 +26,22 @@ export interface TextCriterion {
   signals: Signal[];
 }
 
+export interface DynamicSceneSpec {
+  seed: number;
+  subject: "station" | "rover" | "lighthouse" | "observatory" | "drone" | "monolith";
+  setting: "orbit" | "crater" | "coast" | "cavern" | "dunes";
+  lighting: "cyan-amber" | "magenta-sunset" | "violet-teal" | "solar-gold";
+  framing: "isometric" | "wide" | "closeup" | "low-angle";
+  style: "vector" | "blueprint" | "retro-poster" | "geometric";
+  prop: "moons" | "comet" | "rings" | "mist";
+}
+
 export interface TextPayload {
   kind: "text";
   starter?: string;
   source?: { label: string; text: string };
   referenceImage?: { src: string; alt: string; caption?: string } | undefined;
+  sceneSpec?: DynamicSceneSpec | undefined;
   placeholder: string;
   minWords: number;
   rubric: TextCriterion[];
@@ -74,6 +85,7 @@ export interface Challenge {
   difficulty: Difficulty;
   minutes: number;
   type: ChallengeType;
+  dynamic?: boolean | undefined;
   summary: string;
   scenario: string;
   task: string;

@@ -1,11 +1,12 @@
 import { Link } from "@tanstack/react-router";
-import { AlertCircle, ArrowRight, Bookmark, CheckCircle2, Clock } from "lucide-react";
+import { AlertCircle, ArrowRight, Bookmark, CheckCircle2, Clock, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { domainById, TYPE_LABEL } from "@/lib/arena/domains";
 import { gradeFromScore, submissionEfficiency } from "@/lib/arena/game";
 import { toggleSavedChallenge } from "@/lib/arena/storage";
 import type { Challenge, Difficulty, Grade, Submission } from "@/lib/arena/types";
 import { cn } from "@/lib/utils";
+import { DynamicScenePreview } from "./DynamicScenePreview";
 
 const DIFF_DOT: Record<Difficulty, string> = {
   Beginner: "bg-highlight",
@@ -73,6 +74,12 @@ export function MissionCard({
               {challenge.minutes}m
             </span>
             <span>{TYPE_LABEL[challenge.type]}</span>
+            {challenge.dynamic && (
+              <span className="tag border-highlight/45 bg-highlight/10 text-highlight">
+                <RefreshCw className="h-3 w-3" strokeWidth={1.5} aria-hidden />
+                Dynamic
+              </span>
+            )}
           </div>
           <button
             type="button"
@@ -102,6 +109,14 @@ export function MissionCard({
               className="h-32 w-full object-cover"
               loading="lazy"
             />
+          </div>
+        )}
+
+        {challenge.payload.kind === "text" && challenge.payload.sceneSpec && (
+          <div className="mt-3 overflow-hidden rounded-lg border border-border bg-background/60">
+            <div className="max-h-32 overflow-hidden">
+              <DynamicScenePreview spec={challenge.payload.sceneSpec} />
+            </div>
           </div>
         )}
       </div>

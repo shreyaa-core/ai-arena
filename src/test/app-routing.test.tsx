@@ -13,6 +13,8 @@ describe("App routing", () => {
     "/play/brief-research-assistant",
     "/play/recreate-orbital-beacon",
     "/play/recreate-neon-botanical",
+    "/play/dynamic-visual-forge",
+    "/play/dynamic-brief-roulette",
     "/blitz",
     "/profile",
     "/leaderboard",

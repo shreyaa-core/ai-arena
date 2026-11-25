@@ -41,10 +41,10 @@ function Index() {
   const nextMission = recommendNextChallenge(state);
 
   const featured = [
-    "brief-research-assistant",
+    "dynamic-visual-forge",
+    "dynamic-brief-roulette",
     "recreate-orbital-beacon",
     "spot-hallucinations-python",
-    "deployment-risk-triage",
   ]
     .map((id) => challengeById(id))
     .filter((c): c is Challenge => Boolean(c));

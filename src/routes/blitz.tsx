@@ -5,6 +5,7 @@ import { ChallengeRunner } from "@/components/arena/ChallengeRunner";
 import { GradeBadge } from "@/components/arena/MissionCard";
 import { Button } from "@/components/ui/button";
 import { CHALLENGES, challengeById } from "@/lib/arena/challenges";
+import { materializeChallenge } from "@/lib/arena/dynamicChallenges";
 import { formatDuration, gradeFromScore } from "@/lib/arena/game";
 import { recordBlitzRun, useArenaState } from "@/lib/arena/storage";
 import type { Challenge, EfficiencyBreakdown } from "@/lib/arena/types";
@@ -28,6 +29,12 @@ interface BlitzPreset {
 
 const PRESETS: BlitzPreset[] = [
   {
+    id: "dynamic-gauntlet",
+    name: "Dynamic Infinite Blitz",
+    description: "Fresh procedural visual prompt, rotating brief roulette, and live flaw spotting",
+    challengeIds: ["dynamic-visual-forge", "dynamic-brief-roulette", "spot-hallucinations-python"],
+  },
+  {
     id: "core-trio",
     name: "Core AI Trio",
     description: "Prompt writing, hallucination spotting, and spreadsheet tool selection",
@@ -38,12 +45,6 @@ const PRESETS: BlitzPreset[] = [
     name: "Safety and Pipeline Ops",
     description: "Privacy triage, support workflow design, and weak market claims",
     challengeIds: ["privacy-before-paste", "support-triage-pipeline", "weak-claims-market"],
-  },
-  {
-    id: "creative-sprint",
-    name: "Builder and Creative Sprint",
-    description: "Rewrite bland taglines, scale CSV analysis, and rescue a vague prompt",
-    challengeIds: ["improve-bland-tagline", "tool-for-reviews", "rescue-vague-prompt"],
   },
 ];
 
@@ -56,8 +57,11 @@ function BlitzPage() {
   >([]);
   const [waitingNext, setWaitingNext] = useState(false);
 
+  const [roundSeed, setRoundSeed] = useState(1);
+
   const startBlitz = (preset: BlitzPreset) => {
     setActivePreset(preset);
+    setRoundSeed(Date.now());
     setRoundIdx(0);
     setRoundResults([]);
     setWaitingNext(false);
@@ -146,7 +150,10 @@ function BlitzPage() {
   }
 
   const rounds = activePreset.challengeIds
-    .map((id) => challengeById(id) ?? CHALLENGES[0])
+    .map((id, idx) => {
+      const base = challengeById(id) ?? CHALLENGES[0];
+      return base ? materializeChallenge(base, roundSeed + idx * 137) : undefined;
+    })
     .filter((c): c is Challenge => Boolean(c));
 
   const finished = roundResults.length === rounds.length && !waitingNext;

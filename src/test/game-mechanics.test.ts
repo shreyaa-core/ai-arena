@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { CHALLENGES, challengeById } from "@/lib/arena/challenges";
+import { generateDynamicBriefChallenge, generateDynamicVisualChallenge } from "@/lib/arena/dynamicChallenges";
 import { computeBadges, computeEfficiency, computePlayerStats, gradeFromScore } from "@/lib/arena/game";
 import { evaluateRubric } from "@/lib/arena/scoring";
 import { simulatePromptOutput } from "@/lib/arena/simulator";
@@ -83,5 +84,21 @@ describe("AI Arena game mechanics", () => {
     expect(badges.find((b) => b.id === "first-clear")?.unlocked).toBe(true);
     expect(badges.find((b) => b.id === "one-shot")?.unlocked).toBe(true);
     expect(badges.find((b) => b.id === "hallucination-hunter")?.unlocked).toBe(true);
+  });
+
+  it("generates distinct dynamic visual and brief challenges for different seeds", () => {
+    const v1 = generateDynamicVisualChallenge(101);
+    const v2 = generateDynamicVisualChallenge(777);
+    expect(v1.payload.kind).toBe("text");
+    expect(v2.payload.kind).toBe("text");
+    if (v1.payload.kind === "text" && v2.payload.kind === "text") {
+      expect(v1.payload.sceneSpec).toBeDefined();
+      expect(v2.payload.sceneSpec).toBeDefined();
+      expect(v1.payload.sceneSpec).not.toEqual(v2.payload.sceneSpec);
+    }
+
+    const b1 = generateDynamicBriefChallenge(0);
+    const b2 = generateDynamicBriefChallenge(1);
+    expect(b1.scenario).not.toBe(b2.scenario);
   });
 });

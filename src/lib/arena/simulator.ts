@@ -26,7 +26,7 @@ export function simulatePromptOutput(challenge: Challenge, text: string): Simula
 
   const p: TextPayload = challenge.payload;
   const words = wordCount(text);
-  const isImageTask = Boolean(p.referenceImage);
+  const isImageTask = Boolean(p.referenceImage || p.sceneSpec);
 
   if (!text.trim() || (p.starter && text.trim().toLowerCase() === p.starter.trim().toLowerCase())) {
     return {

@@ -163,7 +163,7 @@ function ProfilePage() {
                   <PolarGrid stroke="rgba(131,56,236,0.3)" />
                   <PolarAngleAxis
                     dataKey="domain"
-                    tick={{ fill: "#d8cff7", fontSize: 12, fontFamily: "Roboto, sans-serif" }}
+                    tick={{ fill: "#d8cff7", fontSize: 12, fontFamily: "Chakra Petch, sans-serif" }}
                   />
                   <PolarRadiusAxis domain={[0, 100]} tick={false} axisLine={false} />
                   <Radar

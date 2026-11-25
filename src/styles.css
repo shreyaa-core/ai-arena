@@ -3,12 +3,11 @@
  * Keep every @import in this top block, above @theme and the rest of the file.
  * All colors in :root use oklch format.
  */
-@import "@fontsource/roboto/400.css";
-@import "@fontsource/roboto/500.css";
-@import "@fontsource/roboto/600.css";
-@import "@fontsource/roboto/700.css";
-@import "@fontsource/roboto-mono/400.css";
-@import "@fontsource/roboto-mono/500.css";
+@import "@fontsource/chakra-petch/400.css";
+@import "@fontsource/chakra-petch/500.css";
+@import "@fontsource/chakra-petch/600.css";
+@import "@fontsource/chakra-petch/700.css";
+@import "@fontsource/share-tech-mono/400.css";
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
@@ -55,9 +54,9 @@
   --color-arcade-purple: var(--arcade-purple);
   --color-success: var(--success);
   --color-warning: var(--warning);
-  --font-display: "Roboto", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: "Roboto", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "Roboto Mono", ui-monospace, monospace;
+  --font-display: "Chakra Petch", "Roboto", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Chakra Petch", "Roboto", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Share Tech Mono", "Roboto Mono", ui-monospace, monospace;
 }
 
 /*

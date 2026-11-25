@@ -3,6 +3,12 @@
  * Keep every @import in this top block, above @theme and the rest of the file.
  * All colors in :root use oklch format.
  */
+@import "@fontsource/roboto/400.css";
+@import "@fontsource/roboto/500.css";
+@import "@fontsource/roboto/600.css";
+@import "@fontsource/roboto/700.css";
+@import "@fontsource/roboto-mono/400.css";
+@import "@fontsource/roboto-mono/500.css";
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";

@@ -1,32 +1,105 @@
+import { useCallback } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { toast } from "sonner";
+import { GameHUD } from "./components/game/GameHUD.jsx";
+import { NovaCompanion } from "./components/game/NovaCompanion.jsx";
+import { OnboardingModal } from "./components/game/OnboardingModal.jsx";
+import { ActiveSystemModal } from "./components/game/PauseSettingsModals.jsx";
+import { PhaserViewport } from "./components/game/PhaserViewport.jsx";
+import { TitleScreen } from "./components/game/TitleScreen.jsx";
+import { GameplayModesModal } from "./components/modes/GameplayModesModal.jsx";
+import { MissionModal } from "./components/modes/MissionModal.jsx";
+import { ProgressionModals } from "./components/modes/ProgressionModals.jsx";
 import { Toaster } from "./components/ui/sonner.jsx";
+import { GameProvider, useGame } from "./context/GameContext.jsx";
+import { playClick } from "./utils/sound.js";
 
-function GameLaunchPlaceholder() {
+function GameRoot() {
+  const {
+    state,
+    stats,
+    screen,
+    activeWorldId,
+    activeModal,
+    setActiveModal,
+    enterTerritory,
+    openMission,
+    collectWorldShard,
+  } = useGame();
+
+  const handleSelectWorld = useCallback(
+    ({ world, unlocked }) => {
+      playClick();
+      if (!unlocked) {
+        toast.info(`${world.name} unlocks at ${world.requiredXp} XP (currently ${stats.totalXp} XP).`);
+        return;
+      }
+      enterTerritory(world.id);
+    },
+    [enterTerritory, stats.totalXp],
+  );
+
+  const handleActivateStation = useCallback(
+    (station) => {
+      playClick();
+      if (station.kind === "npc") {
+        setActiveModal({ type: "npc", data: station.payload });
+        return;
+      }
+      if (station.kind === "tutorial") {
+        setActiveModal({ type: "tutorial", data: { tutorialId: station.id } });
+        return;
+      }
+      if (station.kind === "collectible") {
+        const picked = collectWorldShard(station.payload.worldId, station.payload.label);
+        if (picked) toast.success(`Collected ${picked} (+35 XP)!`);
+        return;
+      }
+      if (station.kind === "mode") {
+        setActiveModal({ type: station.payload.mode });
+        return;
+      }
+      if (station.kind === "mission" || station.kind === "boss") {
+        openMission(station.id, station.kind === "boss" ? "boss" : "campaign");
+      }
+    },
+    [collectWorldShard, openMission, setActiveModal],
+  );
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-[#0B132B] px-6 text-center text-[#F1F5F9]">
-      <div className="max-w-xl rounded-2xl border border-teal-500/30 bg-[#141D38] p-8 shadow-2xl">
-        <p className="font-mono text-xs uppercase tracking-[0.25em] text-teal-400">
-          AI Arena Game Engine
-        </p>
-        <h1 className="mt-3 text-4xl font-bold tracking-tight text-white">
-          AI Arena
-        </h1>
-        <p className="mt-3 text-sm text-slate-300">
-          Core JavaScript engine migrated. World engine & Phaser scenes initializing next.
-        </p>
-      </div>
-    </main>
+    <div className="relative h-screen w-screen overflow-hidden bg-[#0B132B] text-[#F1F5F9]">
+      <PhaserViewport
+        screen={screen}
+        activeWorldId={activeWorldId}
+        state={state}
+        stats={stats}
+        onSelectWorld={handleSelectWorld}
+        onActivateStation={handleActivateStation}
+      />
+
+      {screen === "title" ? <TitleScreen /> : <GameHUD />}
+
+      {screen !== "title" && <NovaCompanion />}
+
+      {activeModal?.type === "onboarding" && <OnboardingModal />}
+      <ActiveSystemModal />
+      <MissionModal />
+      <GameplayModesModal />
+      <ProgressionModals />
+    </div>
   );
 }
 
 export function App() {
   return (
     <BrowserRouter>
-      <Toaster position="top-right" />
-      <Routes>
-        <Route path="/" element={<GameLaunchPlaceholder />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <GameProvider>
+        <Toaster position="top-right" />
+        <Routes>
+          <Route path="/" element={<GameRoot />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </GameProvider>
     </BrowserRouter>
   );
 }

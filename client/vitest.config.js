@@ -16,8 +16,12 @@ export default defineConfig({
     include: ["src/**/*.{test,spec}.{js,jsx}", "../tests/client/**/*.{test,spec}.{js,jsx}"],
   },
   resolve: {
+    dedupe: ["react", "react-dom"],
     alias: {
       "@": path.resolve(import.meta.dirname, "./src"),
+      react: path.resolve(import.meta.dirname, "./node_modules/react"),
+      "react-dom": path.resolve(import.meta.dirname, "./node_modules/react-dom"),
+      "@testing-library/react": path.resolve(import.meta.dirname, "./node_modules/@testing-library/react"),
     },
   },
 });

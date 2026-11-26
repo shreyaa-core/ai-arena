@@ -27,15 +27,15 @@ export function createEmptyArenaState() {
         title: "AI Apprentice",
       },
     },
-    coins: 50,
-    inventory: ["badge-starter", "outfit-standard", "theme-midnight"],
+    coins: 100,
+    inventory: ["suit-teal-vanguard", "badge-starter"],
     equipped: {
-      outfit: "outfit-standard",
+      suit: "suit-teal-vanguard",
+      visor: null,
       companion: "nova-classic",
-      theme: "theme-midnight",
-      title: "AI Apprentice",
+      badge_frame: null,
     },
-    unlockedWorlds: ["prompt"],
+    unlockedWorlds: ["prompt-academy"],
     restoredWorlds: [],
     tutorialsCompleted: [],
     skillNodesUnlocked: [],
@@ -328,22 +328,33 @@ export function unlockSkillNodeLocal(skillId) {
 
 export function claimDailyBonusLocal() {
   const cur = loadArenaState();
-  if (cur.dailyTargetProgress.claimed || cur.dailyTargetProgress.missionsToday < 3) return cur;
-  return saveArenaState({
+  const today = new Date().toISOString().slice(0, 10);
+  if (cur.dailyTargetProgress?.date === today && cur.dailyTargetProgress?.claimed) {
+    return { alreadyClaimed: true, coins: cur.coins, state: cur };
+  }
+  const coinBonus = 40;
+  const next = saveArenaState({
     ...cur,
-    coins: (cur.coins || 0) + 60,
-    dailyTargetProgress: { ...cur.dailyTargetProgress, claimed: true },
+    coins: (cur.coins || 0) + coinBonus,
+    dailyTargetProgress: {
+      date: today,
+      missionsToday: cur.dailyTargetProgress?.missionsToday || 0,
+      claimed: true,
+    },
   });
+  return { alreadyClaimed: false, coinBonus, coins: next.coins, state: next };
 }
 
 export function purchaseItemLocal(item) {
   const cur = loadArenaState();
-  if (cur.inventory.includes(item.id)) return { ok: false, error: "Already owned", state: cur };
-  if (cur.coins < item.cost) return { ok: false, error: "Insufficient coins", state: cur };
+  const price = Number(item.cost ?? item.priceCoins ?? 0);
+  if (cur.inventory.includes(item.id)) return { ok: false, reason: "Already owned", state: cur };
+  if (cur.coins < price) return { ok: false, reason: "Insufficient coins", state: cur };
   const next = saveArenaState({
     ...cur,
-    coins: cur.coins - item.cost,
+    coins: cur.coins - price,
     inventory: [...cur.inventory, item.id],
+    equipped: item.slot ? { ...cur.equipped, [item.slot]: item.id } : cur.equipped,
   });
   return { ok: true, state: next };
 }

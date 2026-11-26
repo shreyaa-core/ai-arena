@@ -1,0 +1,142 @@
+@import "@fontsource/roboto/400.css";
+@import "@fontsource/roboto/500.css";
+@import "@fontsource/roboto/700.css";
+@import "@fontsource/chakra-petch/500.css";
+@import "@fontsource/chakra-petch/600.css";
+@import "@fontsource/chakra-petch/700.css";
+@import "@fontsource/share-tech-mono/400.css";
+@import "tailwindcss" source(none);
+@source "../";
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-highlight: var(--highlight);
+  --color-gold: var(--gold);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --font-display: "Chakra Petch", "Roboto", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Roboto", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Share Tech Mono", ui-monospace, monospace;
+}
+
+/*
+ * Game World Palette:
+ * Midnight Blue #0B132B | Graphite #1C2541 | Muted Teal #14B8A6 | Warm Gold #F59E0B | Off-White #F1F5F9
+ */
+:root {
+  --radius: 0.625rem;
+  --background: #0b132b;
+  --foreground: #f1f5f9;
+  --card: #141d38;
+  --card-foreground: #f1f5f9;
+  --popover: #192442;
+  --popover-foreground: #f1f5f9;
+  --primary: #14b8a6;
+  --primary-foreground: #06211e;
+  --secondary: #1c2541;
+  --secondary-foreground: #f1f5f9;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+  --accent: #243154;
+  --accent-foreground: #f8fafc;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: rgba(148, 163, 184, 0.22);
+  --input: rgba(148, 163, 184, 0.28);
+  --ring: #14b8a6;
+  --highlight: #14b8a6;
+  --gold: #f59e0b;
+  --success: #22c55e;
+  --warning: #f59e0b;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  html,
+  body,
+  #root {
+    height: 100%;
+    color-scheme: dark;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+}
+
+/* Accessibility Modes */
+.a11y-high-contrast {
+  --background: #020617;
+  --card: #0f172a;
+  --secondary: #1e293b;
+  --foreground: #ffffff;
+  --muted-foreground: #e2e8f0;
+  --border: rgba(255, 255, 255, 0.55);
+  --highlight: #2dd4bf;
+  --gold: #fbbf24;
+}
+
+.a11y-large-text {
+  font-size: 18px;
+}
+
+.a11y-reduced-motion *,
+.a11y-reduced-motion *::before,
+.a11y-reduced-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-panel {
+  background: rgba(11, 19, 43, 0.88);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  box-shadow: 0 12px 32px rgba(2, 6, 23, 0.55);
+}
+
+.game-dialogue-box {
+  background: linear-gradient(180deg, rgba(20, 29, 56, 0.96), rgba(11, 19, 43, 0.98));
+  border: 1px solid rgba(20, 184, 166, 0.4);
+  box-shadow: 0 16px 40px rgba(2, 6, 23, 0.65);
+}

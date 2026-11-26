@@ -1,0 +1,953 @@
+import { generateDynamicBriefChallenge, generateDynamicVisualChallenge } from "../engine/dynamicChallenges.js";
+
+const DOMAIN_WORLD_MAP = {
+  prompt: "prompt-academy",
+  evaluation: "verification-city",
+  tools: "tool-forge",
+  workflow: "automation-factory",
+  responsible: "ethics-citadel",
+  creative: "creative-studio",
+};
+
+export const CORE_CHALLENGES = [
+  {
+    id: "brief-research-assistant",
+    title: "Brief a research assistant",
+    domain: "prompt",
+    worldId: "prompt-academy",
+    difficulty: "Beginner",
+    minutes: 8,
+    type: "prompt-write",
+    summary: "Write a prompt that turns three studies into a manager-ready summary.",
+    scenario:
+      "Your manager, Priya, must decide by Friday whether the team keeps two remote days per week. You have three studies on remote work and productivity (a Stanford call-centre trial, a 2023 Microsoft survey, and a university meta-analysis). Priya is not a researcher and has five minutes to read.",
+    task: "Write the prompt you would give an AI assistant to produce the summary.",
+    hints: [
+      "Tell the AI who the reader is and what decision they're making.",
+      "Specify a format and a length limit.",
+      "Ask it to flag uncertainty and cite which study each point comes from.",
+    ],
+    requirements: [
+      "Names the audience and purpose",
+      "Defines output format and length",
+      "Asks for sources or citations",
+      "Handles uncertainty or conflicting evidence",
+    ],
+    payload: {
+      kind: "text",
+      placeholder: "You are a research assistant helping…",
+      minWords: 40,
+      rubric: [
+        {
+          criterion: "relevance",
+          weight: 25,
+          need: 2,
+          signals: [
+            { re: "manager|priya|executive|non-?technical|decision", label: "Names the reader or decision", tip: "Say who will read it and what they must decide." },
+            { re: "remote|hybrid|productivity", label: "Anchors on the topic", tip: "Restate the topic (remote work and productivity)." },
+            { re: "three|3 (studies|papers|sources)|stanford|microsoft|meta-?analysis", label: "References the three studies", tip: "Point the AI at the specific three studies." },
+          ],
+        },
+        {
+          criterion: "clarity",
+          weight: 20,
+          need: 2,
+          signals: [
+            { re: "you are|act as|your role", label: "Sets a role", tip: "Give the assistant a role (e.g. ‘You are a research analyst’)." },
+            { re: "bullet|table|section|heading|tl;?dr|summary first", label: "Defines a format", tip: "Ask for a format such as bullets or a short table." },
+            { re: "plain language|jargon|simple", label: "Sets reading level", tip: "Ask for plain language with no jargon." },
+          ],
+        },
+        {
+          criterion: "specificity",
+          weight: 20,
+          need: 2,
+          signals: [
+            { re: "\\d+\\s*(words|bullets|sentences|points|lines)|one page|under \\d+", label: "Sets a length limit", tip: "Add a concrete length limit (e.g. ‘under 200 words’)." },
+            { re: "recommend|pros and cons|trade-?off|options", label: "Asks for a recommendation or trade-offs", tip: "Ask for trade-offs or a recommendation linked to the decision." },
+            { re: "friday|deadline|five minutes|5 minutes", label: "Includes the constraint", tip: "Mention the time constraint the reader has." },
+          ],
+        },
+        {
+          criterion: "verification",
+          weight: 25,
+          need: 2,
+          signals: [
+            { re: "cite|citation|source|reference|which study", label: "Requires citations", tip: "Require it to cite which study supports each point." },
+            { re: "uncertain|unsure|don'?t know|not sure|confidence|limitation", label: "Asks to flag uncertainty", tip: "Ask it to flag uncertainty or study limitations." },
+            { re: "conflict|disagree|contradict|differ", label: "Handles conflicting evidence", tip: "Ask it to call out where the studies disagree." },
+            { re: "don'?t (invent|make up)|only (use|from) the|do not invent|no fabricat", label: "Forbids invented facts", tip: "Tell it to only use the provided studies." },
+          ],
+        },
+        {
+          criterion: "safety",
+          weight: 10,
+          need: 1,
+          signals: [
+            { re: "neutral|balanced|bias|fair", label: "Asks for balance", tip: "Ask for a balanced, neutral framing." },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    id: "rescue-vague-prompt",
+    title: "Rescue a vague prompt",
+    domain: "prompt",
+    worldId: "prompt-academy",
+    difficulty: "Intermediate",
+    minutes: 10,
+    type: "prompt-write",
+    summary: "Rewrite a one-line prompt into a brief that produces a usable launch email.",
+    scenario:
+      "A colleague typed: “write something about our product launch”. The AI returned a generic 600-word press release. The real need: an email to existing customers of Ledgerly (bookkeeping app for freelancers) announcing automatic receipt scanning, launching 3 March, free on all plans.",
+    task: "Rewrite the prompt so the first answer is close to usable.",
+    hints: [
+      "Include the facts the AI cannot guess: product, feature, date, price.",
+      "Describe tone and audience.",
+      "Ask for a subject line and a single call to action.",
+    ],
+    requirements: [
+      "Includes product facts",
+      "Defines audience and tone",
+      "Constrains length and structure",
+      "Specifies a call to action",
+    ],
+    payload: {
+      kind: "text",
+      starter: "write something about our product launch",
+      placeholder: "Edit the prompt above…",
+      minWords: 45,
+      rubric: [
+        {
+          criterion: "relevance",
+          weight: 25,
+          need: 3,
+          signals: [
+            { re: "ledgerly", label: "Names the product", tip: "Name the product (Ledgerly)." },
+            { re: "receipt", label: "Names the feature", tip: "Name the feature: automatic receipt scanning." },
+            { re: "3 march|march 3|3rd of march|march 3rd", label: "Includes launch date", tip: "Include the launch date (3 March)." },
+            { re: "free|no (extra )?cost|all plans", label: "Includes pricing", tip: "Say it's free on all plans." },
+          ],
+        },
+        {
+          criterion: "clarity",
+          weight: 25,
+          need: 2,
+          signals: [
+            { re: "email", label: "Specifies the format (email)", tip: "Say it's an email, not a press release." },
+            { re: "existing customers|current (users|customers)|freelancer", label: "Defines the audience", tip: "Describe the audience: existing freelancer customers." },
+            { re: "tone|friendly|warm|concise|professional|casual", label: "Sets tone", tip: "Describe the tone you want." },
+          ],
+        },
+        {
+          criterion: "specificity",
+          weight: 30,
+          need: 3,
+          signals: [
+            { re: "subject line", label: "Asks for a subject line", tip: "Ask for a subject line (or options)." },
+            { re: "call to action|cta|button|link to", label: "Defines a call to action", tip: "Specify exactly one call to action." },
+            { re: "\\d+\\s*(words|sentences|paragraphs)|short|brief", label: "Constrains length", tip: "Set a length (e.g. under 150 words)." },
+            { re: "benefit|save time|hours", label: "Focuses on benefits", tip: "Ask it to lead with the customer benefit." },
+            { re: "avoid|don'?t|do not|no (hype|jargon|emoji)", label: "States what to avoid", tip: "Say what to avoid (hype, jargon, press-release voice)." },
+          ],
+        },
+        {
+          criterion: "verification",
+          weight: 20,
+          need: 1,
+          signals: [
+            { re: "don'?t (invent|make up|add)|only (use|include) (these|the) facts|no (made.up|invented)|placeholder|\\[", label: "Prevents invented claims", tip: "Tell it not to invent features, stats or quotes." },
+            { re: "options|variants|versions|two|three", label: "Requests variants to compare", tip: "Ask for 2–3 variants so you can compare." },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    id: "spot-hallucinations-python",
+    title: "Spot the hallucinations",
+    domain: "evaluation",
+    worldId: "verification-city",
+    difficulty: "Intermediate",
+    minutes: 7,
+    type: "spot-flaws",
+    summary: "An AI wrote a confident history of Python. Flag the sentences that are wrong or fabricated.",
+    scenario:
+      "A student asked an AI assistant for a short history of the Python programming language for a class presentation. The answer reads fluently. Your job is to check it before it goes on a slide.",
+    task: "Select every sentence that is false, fabricated or unverifiable as written.",
+    hints: [
+      "Precise-sounding statistics without a source are a classic red flag.",
+      "Check origin stories — names and institutions are commonly confused.",
+    ],
+    requirements: ["Flag every incorrect sentence", "Avoid flagging accurate sentences"],
+    payload: {
+      kind: "flags",
+      intro: "AI answer — “A brief history of Python”",
+      segments: [
+        { id: "s1", text: "Python was created by Guido van Rossum and first released in 1991.", flawed: false, why: "Correct — Python 0.9.0 was released in February 1991." },
+        { id: "s2", text: "It was originally developed at Google as an internal scripting language.", flawed: true, why: "False — Python began at CWI in the Netherlands. Van Rossum joined Google in 2005." },
+        { id: "s3", text: "The language is named after the python snake, which is why its logo shows two snakes.", flawed: true, why: "False — it's named after Monty Python's Flying Circus." },
+        { id: "s4", text: "Python 3.0, released in 2008, was intentionally not backward compatible with Python 2.", flawed: false, why: "Correct — Python 3.0 shipped in December 2008 with breaking changes." },
+        { id: "s5", text: "A 2019 Stanford study found that 92% of all professional developers use Python daily.", flawed: true, why: "Fabricated — no such study; the statistic is implausible and unsourced." },
+        { id: "s6", text: "PEP 8 is the widely used style guide for Python code.", flawed: false, why: "Correct." },
+        { id: "s7", text: "Python 2 reached end of life on 1 January 2020.", flawed: false, why: "Correct." },
+      ],
+    },
+  },
+  {
+    id: "weak-claims-market",
+    title: "Weak claims in a market brief",
+    domain: "evaluation",
+    worldId: "verification-city",
+    difficulty: "Advanced",
+    minutes: 9,
+    type: "spot-flaws",
+    summary: "Find unsupported, overconfident or misleading claims in an AI-generated market summary.",
+    scenario:
+      "Your startup's investor update includes an AI-drafted paragraph on the plant-based snack market. You have not verified any of it. An investor will read it tomorrow.",
+    task: "Select every sentence that is overconfident, unsupported or misleading. Factual-sounding is not the same as sourced.",
+    hints: [
+      "Look for certainty about the future.",
+      "Look for appeals to unnamed authorities.",
+      "Correlation presented as cause is a weak claim.",
+    ],
+    requirements: ["Flag unsupported or overconfident claims", "Leave reasonable, hedged statements alone"],
+    payload: {
+      kind: "flags",
+      intro: "AI draft — “Market outlook”",
+      segments: [
+        { id: "m1", text: "Interest in plant-based snacks has grown over the last several years, according to multiple industry reports.", flawed: false, why: "Reasonable and hedged; you would still add a citation, but it isn't overclaiming." },
+        { id: "m2", text: "The market will certainly triple by 2027.", flawed: true, why: "Overconfident prediction with no source or range." },
+        { id: "m3", text: "Experts agree that our flavour profile is what consumers want most.", flawed: true, why: "Appeal to unnamed experts; nobody has evaluated your specific product." },
+        { id: "m4", text: "Some retailers have expanded shelf space for the category, though trends vary by region.", flawed: false, why: "Hedged and acknowledges variation." },
+        { id: "m5", text: "Cities with more vegan restaurants have higher snack sales, proving that veganism drives snacking.", flawed: true, why: "Correlation presented as causation." },
+        { id: "m6", text: "Competitors have no meaningful moat, so we will capture significant share.", flawed: true, why: "Sweeping, unsupported claim and a leap to a conclusion." },
+        { id: "m7", text: "We have not yet validated pricing with a large sample of customers.", flawed: false, why: "Honest limitation — this strengthens credibility." },
+      ],
+    },
+  },
+  {
+    id: "pick-best-spreadsheet",
+    title: "Which answer would you trust?",
+    domain: "tools",
+    worldId: "tool-forge",
+    difficulty: "Beginner",
+    minutes: 5,
+    type: "best-response",
+    summary: "Compare three AI answers to a spreadsheet question and justify the best one.",
+    scenario:
+      "You asked an AI: “In Google Sheets, how do I count how many rows in column B say ‘Paid’?” Three assistants replied.",
+    task: "Choose the most useful response and explain why in a sentence or two.",
+    hints: ["Which answer can you test immediately?", "Does any answer mention an edge case?"],
+    requirements: ["Pick the best response", "Justify with concrete reasons"],
+    payload: {
+      kind: "choice",
+      prompt: "“In Google Sheets, how do I count how many rows in column B say ‘Paid’?”",
+      options: [
+        { id: "a", label: "Response A", text: "You can use a formula for that. Spreadsheets have many counting functions, so try a few and see what works for your data.", quality: 0.1, why: "Vague — no formula, nothing to test." },
+        { id: "b", label: "Response B", text: "Use =COUNTIF(B:B, \"Paid\"). It counts cells in column B equal to “Paid” (not case-sensitive). If some cells have extra spaces, try =COUNTIF(B:B, \"*Paid*\") or clean the data with TRIM first.", quality: 1, why: "Exact formula, explains behaviour, and covers a realistic edge case." },
+        { id: "c", label: "Response C", text: "Use =SUM(B:B=\"Paid\"). This is the fastest method and works in every spreadsheet program.", quality: 0.25, why: "Overconfident; this doesn't work as written without an array formula." },
+      ],
+      justification: {
+        criterion: "clarity",
+        weight: 40,
+        need: 2,
+        signals: [
+          { re: "countif|formula|exact|specific|concrete", label: "Notes it is specific/testable", tip: "Mention that it gives an exact, testable formula." },
+          { re: "edge case|spaces|trim|case.sensitive|wildcard", label: "Notes the edge-case handling", tip: "Mention edge-case handling (spaces, case)." },
+          { re: "explain|why|how it works", label: "Values the explanation", tip: "Note that it explains how the formula works." },
+          { re: "overconfident|wrong|won'?t work|vague|every spreadsheet", label: "Critiques the others", tip: "Say what's wrong with the other answers." },
+        ],
+      },
+    },
+  },
+  {
+    id: "tool-for-reviews",
+    title: "Analyse 10,000 reviews",
+    domain: "tools",
+    worldId: "tool-forge",
+    difficulty: "Intermediate",
+    minutes: 7,
+    type: "best-response",
+    summary: "Choose the right AI approach for analysing a large CSV of customer reviews.",
+    scenario:
+      "You have a 10,000-row CSV of customer reviews and need the top complaint themes with rough frequencies for a product meeting. You have access to a chat assistant with a data-analysis (code execution) tool.",
+    task: "Pick the strongest approach and justify it.",
+    hints: ["Chat context windows have limits.", "How would you check the AI's theme counts?"],
+    requirements: ["Choose a scalable approach", "Mention how you'd verify the result"],
+    payload: {
+      kind: "choice",
+      prompt: "How should you get the top complaint themes?",
+      options: [
+        { id: "a", label: "Approach A", text: "Paste all 10,000 reviews into the chat and ask “what are people complaining about?”", quality: 0.15, why: "Likely exceeds context, silently truncates, and gives no frequencies." },
+        { id: "b", label: "Approach B", text: "Upload the CSV to the data-analysis tool, have AI propose themes from a random sample of 300, then classify all rows with code and spot-check 30 labels by hand.", quality: 1, why: "Scales, produces counts, and includes human verification." },
+        { id: "c", label: "Approach C", text: "Ask the AI to guess the most common complaints for this kind of product based on its general knowledge.", quality: 0.05, why: "Ignores your data entirely." },
+      ],
+      justification: {
+        criterion: "verification",
+        weight: 40,
+        need: 2,
+        signals: [
+          { re: "sample|random", label: "Values sampling", tip: "Mention starting from a representative sample." },
+          { re: "spot.?check|verify|manual|by hand|human|check", label: "Mentions verification", tip: "Explain how labels get spot-checked." },
+          { re: "context|truncat|too (long|large)|scale|all rows", label: "Notes scale limits", tip: "Note chat context limits vs. code execution." },
+          { re: "count|frequenc|numbers|quantif", label: "Wants counts", tip: "Point out that you need frequencies, not vibes." },
+        ],
+      },
+    },
+  },
+  {
+    id: "support-triage-pipeline",
+    title: "Design a support triage pipeline",
+    domain: "workflow",
+    worldId: "automation-factory",
+    difficulty: "Intermediate",
+    minutes: 10,
+    type: "workflow-design",
+    summary: "Assemble an AI-assisted workflow that routes support tickets safely.",
+    scenario:
+      "A 6-person support team gets ~400 tickets/day. Leadership wants AI to draft first replies and route tickets, without customers receiving wrong refund promises.",
+    task: "Add the steps you'd include and put them in order. Leave out steps that would cause harm.",
+    hints: ["Where should a human sit in the loop?", "What do you measure after launch?"],
+    requirements: ["Include classification and drafting", "Include human review for risky cases", "Measure quality", "Avoid unsafe automation"],
+    payload: {
+      kind: "workflow",
+      goal: "AI-assisted ticket triage with safe first replies",
+      steps: [
+        { id: "redact", label: "Redact personal data", detail: "Strip card numbers and addresses before sending to the model.", order: 1, why: "Protects customers before any model call." },
+        { id: "classify", label: "Classify intent & urgency", detail: "Label each ticket (billing, bug, how-to) and urgency.", order: 2, why: "Routing needs labels first." },
+        { id: "draft", label: "Draft reply with help-centre sources", detail: "Generate a draft grounded in approved articles, with links.", order: 3, why: "Grounding reduces hallucinated policy." },
+        { id: "review", label: "Human review for refunds & low confidence", detail: "Agents approve drafts touching money or flagged as uncertain.", order: 4, verify: true, why: "Puts humans on the risky cases." },
+        { id: "measure", label: "Track accuracy & CSAT weekly", detail: "Sample 50 tickets/week, score correctness, watch satisfaction.", order: 5, verify: true, why: "You can't improve what you don't measure." },
+        { id: "autosend", label: "Auto-send all drafts instantly", detail: "No human in the loop for any ticket.", risky: true, why: "Wrong refund promises would reach customers." },
+        { id: "finetune", label: "Fine-tune on raw ticket history", detail: "Train on unredacted historical tickets.", risky: true, why: "Leaks personal data into a model; overkill for v1." },
+        { id: "hide", label: "Hide that replies are AI-drafted", detail: "Remove any disclosure from replies.", risky: true, why: "Undermines trust and may breach policy." },
+      ],
+    },
+  },
+  {
+    id: "lit-review-workflow",
+    title: "Build a literature-review workflow",
+    domain: "workflow",
+    worldId: "automation-factory",
+    difficulty: "Advanced",
+    minutes: 12,
+    type: "workflow-design",
+    summary: "Sequence an AI-assisted research workflow that won't cite papers that don't exist.",
+    scenario:
+      "You're writing a thesis chapter on sleep and learning. You want AI help to find, screen and synthesise ~40 papers in two weeks, without fabricated references.",
+    task: "Add and order the steps of your workflow. Exclude steps that compromise integrity.",
+    hints: ["Search real databases, don't ask a chatbot for citations.", "Where do you check the AI's summaries?"],
+    requirements: ["Ground in real sources", "Verify summaries against originals", "Keep authorship honest"],
+    payload: {
+      kind: "workflow",
+      goal: "Trustworthy AI-assisted literature review",
+      steps: [
+        { id: "question", label: "Define question & inclusion criteria", detail: "Write the research question and screening rules first.", order: 1, why: "Everything downstream depends on it." },
+        { id: "search", label: "Search real databases", detail: "Use Google Scholar/PubMed; export results with DOIs.", order: 2, why: "Grounds the review in real papers." },
+        { id: "screen", label: "AI-assisted abstract screening", detail: "AI suggests include/exclude against your criteria; you confirm.", order: 3, why: "Speeds screening while you stay in charge." },
+        { id: "extract", label: "Extract findings into a table", detail: "AI pulls methods, sample size, findings per paper.", order: 4, why: "Structured data makes synthesis honest." },
+        { id: "verify", label: "Verify extractions against PDFs", detail: "Check a sample of every AI extraction against the source.", order: 5, verify: true, why: "Catches misread numbers and invented claims." },
+        { id: "synth", label: "Write synthesis yourself, cite DOIs", detail: "Draft with AI feedback but in your own words.", order: 6, why: "Keeps authorship and judgement yours." },
+        { id: "askcite", label: "Ask chatbot for 40 relevant citations", detail: "Use whatever references it lists.", risky: true, why: "Chatbots frequently fabricate references." },
+        { id: "ghost", label: "Submit AI-written chapter as-is", detail: "Paste the generated text into the thesis.", risky: true, why: "Academic integrity risk, and unverified content." },
+      ],
+    },
+  },
+  {
+    id: "deployment-risk-triage",
+    title: "Classify deployment risks",
+    domain: "responsible",
+    worldId: "ethics-citadel",
+    difficulty: "Intermediate",
+    minutes: 8,
+    type: "risk-classify",
+    summary: "Rate the risk level of six proposed AI use cases at a mid-sized company.",
+    scenario:
+      "Your company's AI working group is reviewing proposals. You need to rate each as low, medium or high risk so the review board knows where to focus.",
+    task: "Assign a risk level to every use case.",
+    hints: ["Consider who is affected and whether decisions are reversible.", "Automated decisions about people's livelihoods are high stakes."],
+    requirements: ["Rate every item", "Correctly identify the high-risk uses"],
+    payload: {
+      kind: "risk",
+      items: [
+        { id: "r1", text: "Summarising internal meeting notes for attendees.", level: "low", why: "Low stakes, reviewed by people who were there." },
+        { id: "r2", text: "Automatically rejecting job applicants based on AI CV scoring.", level: "high", why: "Consequential, bias-prone decision about people with no human review." },
+        { id: "r3", text: "Drafting marketing copy that a human edits before publishing.", level: "low", why: "Human-reviewed, reversible." },
+        { id: "r4", text: "A customer chatbot that answers questions about loan eligibility.", level: "high", why: "Financial advice to customers; errors cause real harm and regulatory exposure." },
+        { id: "r5", text: "Generating first-draft code reviewed by engineers before merge.", level: "medium", why: "Reviewed, but subtle security bugs can slip through." },
+        { id: "r6", text: "Translating safety instructions for factory staff.", level: "medium", why: "Mistranslation could cause injury; needs native-speaker check." },
+      ],
+    },
+  },
+  {
+    id: "privacy-before-paste",
+    title: "Privacy check before you paste",
+    domain: "responsible",
+    worldId: "ethics-citadel",
+    difficulty: "Beginner",
+    minutes: 5,
+    type: "risk-classify",
+    summary: "Decide which pieces of information are safe to paste into a public AI chatbot.",
+    scenario:
+      "You use a free, public AI chatbot whose terms say conversations may be used for training. Before pasting, rate the risk of sharing each item.",
+    task: "Rate each item low, medium or high risk to paste.",
+    hints: ["Personal and confidential data are the main concerns.", "Public information is usually low risk."],
+    requirements: ["Rate every item", "Catch the sensitive data"],
+    payload: {
+      kind: "risk",
+      items: [
+        { id: "p1", text: "A paragraph from your company's public blog post.", level: "low", why: "Already public." },
+        { id: "p2", text: "A customer list with names, emails and purchase history.", level: "high", why: "Personal data — likely breaches privacy law and policy." },
+        { id: "p3", text: "Your own draft cover letter with no personal identifiers.", level: "low", why: "Your own content, nothing sensitive." },
+        { id: "p4", text: "An unreleased quarterly revenue figure.", level: "high", why: "Confidential, potentially market-sensitive." },
+        { id: "p5", text: "Anonymised survey comments you've already scrubbed of names.", level: "medium", why: "Lower risk, but re-identification is possible; check policy." },
+        { id: "p6", text: "An API key in a code snippet you want debugged.", level: "high", why: "Secrets must never be pasted — rotate it if you did." },
+      ],
+    },
+  },
+  {
+    id: "improve-bland-tagline",
+    title: "Improve a bland AI output",
+    domain: "creative",
+    worldId: "creative-studio",
+    difficulty: "Beginner",
+    minutes: 6,
+    type: "improve-output",
+    summary: "Turn generic AI taglines into sharp options and explain your edits.",
+    scenario:
+      "Riverbend Café is a neighbourhood café that roasts its own beans and stays open until midnight for students. An AI suggested taglines, and they're forgettable.",
+    task: "Write 3 improved taglines, then a short note explaining what you changed and why.",
+    hints: ["Use what's unique: own roasting, open late, students.", "Short, concrete, sensory words beat superlatives."],
+    requirements: ["Three distinct taglines", "Use specific details", "Explain your reasoning"],
+    payload: {
+      kind: "text",
+      source: {
+        label: "AI output",
+        text: "1. The best coffee in town.\n2. Quality coffee for everyone.\n3. Your favourite place for coffee and more!",
+      },
+      placeholder: "1. …\n2. …\n3. …\n\nWhy: …",
+      minWords: 30,
+      rubric: [
+        {
+          criterion: "relevance",
+          weight: 25,
+          need: 2,
+          signals: [
+            { re: "roast", label: "Uses own-roasting detail", tip: "Use the fact they roast their own beans." },
+            { re: "midnight|late|night|12", label: "Uses opening-hours detail", tip: "Use the open-until-midnight detail." },
+            { re: "student|study|cram|exam|essay", label: "Speaks to students", tip: "Speak to the student audience." },
+            { re: "riverbend|neighbou?rhood|local", label: "Grounds in place", tip: "Ground it in the neighbourhood or name." },
+          ],
+        },
+        {
+          criterion: "specificity",
+          weight: 30,
+          need: 1,
+          signals: [
+            { re: "(^|\\n)\\s*(1[.)]|-|•).*\\n\\s*(2[.)]|-|•).*\\n\\s*(3[.)]|-|•)", label: "Gives three options", tip: "Provide three numbered taglines." },
+          ],
+        },
+        {
+          criterion: "clarity",
+          weight: 25,
+          need: 2,
+          signals: [
+            { re: "why|because|changed|replaced|instead", label: "Explains edits", tip: "Explain what you changed and why." },
+            { re: "generic|vague|cliche|cliché|superlative|forgettable", label: "Names the original's weakness", tip: "Name what was weak about the original." },
+            { re: "short|concise|punch|memorable|rhythm", label: "Considers brevity", tip: "Comment on length or memorability." },
+          ],
+        },
+        {
+          criterion: "verification",
+          weight: 20,
+          need: 1,
+          signals: [
+            { re: "avoid (claim|saying)|can'?t (prove|claim)|unverifiable|\"best\"|best in town", label: "Avoids unprovable claims", tip: "Point out that “best in town” is an unprovable claim." },
+            { re: "test|a/b|ask customers|feedback", label: "Plans to test", tip: "Suggest testing options with real customers." },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    id: "reframe-stuck-problem",
+    title: "Use AI as a thinking partner",
+    domain: "creative",
+    worldId: "creative-studio",
+    difficulty: "Advanced",
+    minutes: 10,
+    type: "prompt-write",
+    summary: "Write a prompt that makes AI widen and then challenge your options, not just agree.",
+    scenario:
+      "You run a small community library. Weekday visits have dropped 30% in a year. You've tried a poster campaign. You want AI to help you think differently, not hand you a generic listicle.",
+    task: "Write a prompt that uses AI as a structured brainstorming partner.",
+    hints: [
+      "Ask for multiple perspectives or personas.",
+      "Ask it to critique its own ideas and rank them by effort and impact.",
+      "Give real constraints: budget, staff, what already failed.",
+    ],
+    requirements: ["Gives constraints and context", "Requests divergent ideas", "Requests critique or ranking", "Asks for next-step experiments"],
+    payload: {
+      kind: "text",
+      placeholder: "I run a community library…",
+      minWords: 50,
+      rubric: [
+        {
+          criterion: "relevance",
+          weight: 20,
+          need: 2,
+          signals: [
+            { re: "library", label: "States the context", tip: "Describe the library context." },
+            { re: "30%|weekday|visits|attendance", label: "States the problem with data", tip: "Include the 30% weekday drop." },
+            { re: "poster|already tried|didn'?t work", label: "Shares what failed", tip: "Mention what you've already tried." },
+          ],
+        },
+        {
+          criterion: "specificity",
+          weight: 25,
+          need: 2,
+          signals: [
+            { re: "budget|\\$|£|€|cost", label: "Gives budget constraints", tip: "Add a budget constraint." },
+            { re: "staff|volunteer|hours|time", label: "Gives capacity constraints", tip: "Add a staff/time constraint." },
+            { re: "\\d+\\s*(ideas|options|approaches)", label: "Sets a number of ideas", tip: "Ask for a specific number of ideas." },
+          ],
+        },
+        {
+          criterion: "clarity",
+          weight: 20,
+          need: 2,
+          signals: [
+            { re: "perspective|persona|as a (teenager|parent|retiree|student)|stakeholder|viewpoint", label: "Requests multiple perspectives", tip: "Ask for ideas from several perspectives or personas." },
+            { re: "unconventional|wild|unexpected|diverge|different", label: "Pushes for divergence", tip: "Ask for unconventional ideas, not obvious ones." },
+            { re: "step|first|then|phase", label: "Structures the conversation", tip: "Break the task into steps (diverge, then converge)." },
+          ],
+        },
+        {
+          criterion: "verification",
+          weight: 25,
+          need: 2,
+          signals: [
+            { re: "critique|weakness|challenge|devil'?s advocate|push back|why (it|this) might fail", label: "Asks for critique", tip: "Ask it to critique its own ideas." },
+            { re: "rank|prioriti|effort|impact|score", label: "Asks for ranking", tip: "Ask it to rank by effort and impact." },
+            { re: "experiment|pilot|test|measure|metric", label: "Asks for testable experiments", tip: "Ask for small experiments and how to measure them." },
+            { re: "assumption|question(s)? (for|to ask) me|ask me", label: "Surfaces assumptions", tip: "Ask it to list assumptions or questions for you." },
+          ],
+        },
+        {
+          criterion: "safety",
+          weight: 10,
+          need: 1,
+          signals: [
+            { re: "inclusive|accessib|community|privacy|underserved", label: "Considers inclusion", tip: "Ask it to consider accessibility and inclusion." },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    id: "recreate-orbital-beacon",
+    title: "Recreate the orbital observatory",
+    domain: "prompt",
+    worldId: "prompt-academy",
+    difficulty: "Beginner",
+    minutes: 6,
+    type: "image-prompt",
+    summary: "Study the reference illustration and write an image-generation prompt to recreate it accurately.",
+    scenario:
+      "You want an AI image generator to reproduce the exact target illustration shown here for a mission briefing slide — without burning multiple re-rolls.",
+    task: "Inspect the target image and write one concise prompt covering subject, setting, composition/angle, lighting/colors, style, and what to exclude.",
+    hints: [
+      "Name the main subject (orbital research station with solar arrays) and what sits behind it (crescent planet in deep space).",
+      "Specify the camera view (isometric or three-quarter view), colors (cyan horizon, amber windows, indigo space), and illustration style.",
+      "Exclude unwanted artifacts like text, letters, or watermarks.",
+    ],
+    requirements: [
+      "Describes the orbital station and solar panels",
+      "Places the crescent planet in deep indigo space",
+      "Specifies isometric / three-quarter framing and cyan/amber lighting",
+      "States stylized vector/illustration style and no-text exclusion",
+    ],
+    payload: {
+      kind: "text",
+      referenceImage: {
+        src: "/missions/orbital-observatory.jpg",
+        alt: "Retro-futuristic orbital research station floating above a glowing cyan crescent planet in deep indigo space",
+        caption: "Target reference — recreate this composition, lighting, and style in one prompt",
+      },
+      placeholder: "Stylized sci-fi illustration of an orbital research station…",
+      minWords: 30,
+      rubric: [
+        {
+          criterion: "relevance",
+          weight: 30,
+          need: 2,
+          signals: [
+            { re: "station|observatory|satellite|outpost", label: "Names the orbital station", tip: "Describe the orbital research station / observatory." },
+            { re: "solar|array|panel|wing", label: "Includes solar arrays", tip: "Mention the solar arrays / panels on the station." },
+            { re: "planet|crescent|horizon|orbit|space", label: "Includes the crescent planet & space", tip: "Include the glowing crescent planet below in deep space." },
+          ],
+        },
+        {
+          criterion: "clarity",
+          weight: 25,
+          need: 2,
+          signals: [
+            { re: "isometric|three-?quarter|3/4|angled|wide|floating above", label: "Defines angle & framing", tip: "Specify the isometric or three-quarter angle." },
+            { re: "illustration|vector|stylized|painted|book.?cover|retro-?futuristic|sci-?fi art", label: "Defines art style", tip: "Name the stylized sci-fi illustration / vector style." },
+          ],
+        },
+        {
+          criterion: "specificity",
+          weight: 25,
+          need: 2,
+          signals: [
+            { re: "cyan|teal|aqua|blue glow", label: "Specifies cyan horizon glow", tip: "Mention the glowing cyan-blue planet horizon." },
+            { re: "amber|warm|orange|yellow window|lit window", label: "Specifies amber windows", tip: "Mention the warm amber-lit observatory windows." },
+            { re: "indigo|deep blue|dark space|purple-?black", label: "Specifies deep indigo backdrop", tip: "Describe the deep indigo space backdrop." },
+          ],
+        },
+        {
+          criterion: "safety",
+          weight: 20,
+          need: 1,
+          signals: [
+            { re: "no text|without text|no letters|no watermark|no logo|clean", label: "Excludes text & watermarks", tip: "Add a negative constraint such as 'no text, no letters, no watermark'." },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    id: "recreate-neon-botanical",
+    title: "Recreate the glasshouse specimen",
+    domain: "prompt",
+    worldId: "prompt-academy",
+    difficulty: "Intermediate",
+    minutes: 8,
+    type: "image-prompt",
+    summary: "Reverse-engineer a moody studio macro photograph into a sharp, reproducible image prompt.",
+    scenario:
+      "Your design team needs another asset matching the visual style of this reference render. Instead of guessing through five generations, capture every visual cue in one prompt.",
+    task: "Write a prompt that reproduces the subject, container, surface, lighting, depth of field, and photorealistic style of the target image.",
+    hints: [
+      "Identify both the plant (bioluminescent fern) and its enclosure (octagonal brass-and-glass terrarium on a dark slate bench).",
+      "Describe the lighting and lens: cyan and violet volumetric glow, rim lighting, macro close-up with shallow depth of field.",
+      "State photorealistic studio render and forbid text or logos.",
+    ],
+    requirements: [
+      "Names the bioluminescent fern and brass/glass terrarium",
+      "Specifies dark slate bench setting",
+      "Specifies macro close-up and shallow depth of field",
+      "Captures cyan/violet glow, rim lighting, and no-text constraint",
+    ],
+    payload: {
+      kind: "text",
+      referenceImage: {
+        src: "/missions/bioluminescent-terrarium.jpg",
+        alt: "Bioluminescent cyan and violet fern inside an octagonal brass-and-glass terrarium on a dark slate bench",
+        caption: "Target reference — reverse-engineer the lens, lighting, materials, and subject",
+      },
+      placeholder: "Photorealistic macro studio photo of a bioluminescent fern…",
+      minWords: 35,
+      rubric: [
+        {
+          criterion: "relevance",
+          weight: 25,
+          need: 2,
+          signals: [
+            { re: "fern|plant|specimen|botanical|leaf|leaves", label: "Identifies the fern specimen", tip: "Name the glowing fern / botanical specimen." },
+            { re: "terrarium|glass|brass|octagonal|enclosure|case", label: "Describes the brass-and-glass terrarium", tip: "Describe the brass-and-glass terrarium." },
+            { re: "slate|bench|table|lab|dark surface", label: "Sets the dark slate surface", tip: "Place it on a dark slate lab bench or dark surface." },
+          ],
+        },
+        {
+          criterion: "clarity",
+          weight: 25,
+          need: 2,
+          signals: [
+            { re: "macro|close-?up|shallow depth|bokeh|blurred background", label: "Specifies macro & depth of field", tip: "Specify macro close-up and shallow depth of field." },
+            { re: "photorealistic|studio photo|photograph|3d render|product render", label: "Defines photorealistic style", tip: "Specify a photorealistic studio photograph style." },
+          ],
+        },
+        {
+          criterion: "specificity",
+          weight: 30,
+          need: 2,
+          signals: [
+            { re: "bioluminescen|glow|luminous|volumetric", label: "Describes bioluminescent glow", tip: "Describe the soft bioluminescent / volumetric glow." },
+            { re: "cyan|teal|blue", label: "Includes cyan glow", tip: "Include the cyan glow color." },
+            { re: "violet|purple|magenta", label: "Includes violet accent", tip: "Include the violet glow accent." },
+            { re: "rim light|edge light|moody lighting|studio light", label: "Specifies rim/studio lighting", tip: "Mention crisp rim lighting on the glass and brass." },
+          ],
+        },
+        {
+          criterion: "safety",
+          weight: 20,
+          need: 1,
+          signals: [
+            { re: "no text|without text|no logo|no watermark|no label", label: "Excludes text & logos", tip: "Explicitly exclude text, logos, and watermarks." },
+          ],
+        },
+      ],
+    },
+  },
+  generateDynamicVisualChallenge(101),
+  generateDynamicBriefChallenge(202),
+];
+
+// Additional campaign & world missions ensuring every one of the 6 worlds has rich gameplay + a Boss Battle
+export const EXPANDED_WORLD_MISSIONS = [
+  {
+    id: "academy-boss-core",
+    title: "Boss: Restore the Prompt Reactor",
+    domain: "prompt",
+    worldId: "prompt-academy",
+    difficulty: "Advanced",
+    minutes: 9,
+    isBoss: true,
+    type: "prompt-write",
+    summary: "Repair Prompt Academy's destabilised central instruction core under strict constraints.",
+    scenario:
+      "The Prompt Academy core AI keeps returning sprawling, ungrounded essays. Engineers need a crisp executive incident briefing from 3 telemetry logs (CPU spike, Redis timeout, CDN misroute) in strictly JSON or bullet matrix format under 150 words.",
+    task: "Write a high-precision system + user prompt assigning role, strict schema/format, max length, and hallucination guardrails.",
+    hints: [
+      "Assign an expert systems SRE role and name the 3 telemetry inputs.",
+      "Enforce strict JSON or markdown bullet matrix format under 150 words.",
+      "Explicitly forbid inventing missing root causes and require confidence levels.",
+    ],
+    requirements: [
+      "Sets SRE/analyst role & audience",
+      "Enforces strict structure and length limit",
+      "References all 3 telemetry signals",
+      "Requires confidence flags and no invented causes",
+    ],
+    payload: {
+      kind: "text",
+      placeholder: "Role: Senior SRE analyst…",
+      minWords: 45,
+      rubric: [
+        {
+          criterion: "relevance",
+          weight: 25,
+          need: 2,
+          signals: [
+            { re: "cpu|redis|cdn|telemetry|logs", label: "Anchors on telemetry inputs", tip: "Name the 3 telemetry logs (CPU, Redis, CDN)." },
+            { re: "incident|outage|engineer|brief", label: "States incident purpose", tip: "Name the engineering incident brief audience." },
+          ],
+        },
+        {
+          criterion: "clarity",
+          weight: 25,
+          need: 2,
+          signals: [
+            { re: "you are|act as|role", label: "Assigns SRE role", tip: "Assign a Senior SRE or analyst role." },
+            { re: "json|table|matrix|bullet|schema", label: "Locks structured schema", tip: "Specify JSON or bullet matrix schema." },
+          ],
+        },
+        {
+          criterion: "specificity",
+          weight: 25,
+          need: 1,
+          signals: [
+            { re: "150|under \\d+|max \\d+ words|concise", label: "Caps word budget", tip: "Set the under-150-words budget." },
+          ],
+        },
+        {
+          criterion: "verification",
+          weight: 25,
+          need: 2,
+          signals: [
+            { re: "confidence|uncertain|unknown|gap", label: "Requires confidence tags", tip: "Ask it to attach confidence levels or note gaps." },
+            { re: "don'?t (invent|guess|fabricate)|only use|strictly from", label: "Forbids hallucinated root causes", tip: "Forbid inventing missing causes." },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    id: "verification-boss-ledger",
+    title: "Boss: Unmask the Civic Bot Mirage",
+    domain: "evaluation",
+    worldId: "verification-city",
+    difficulty: "Advanced",
+    minutes: 8,
+    isBoss: true,
+    type: "spot-flaws",
+    summary: "Audit a malfunctioning city transit AI bulletin before false emergency notices go live.",
+    scenario:
+      "Verification City's automated transit dispatcher generated a morning advisory. Three fabricated or dangerous claims slipped inside accurate updates.",
+    task: "Flag every fabricated, unsourced, or dangerous claim while keeping valid operational notices intact.",
+    hints: ["Check impossibly exact statistics and non-existent emergency orders.", "Notice medical or legal guarantees without citations."],
+    requirements: ["Flag all 3 fabricated claims", "Preserve verified service lines"],
+    payload: {
+      kind: "flags",
+      intro: "City AI Dispatch Bulletin #409",
+      segments: [
+        { id: "v1", text: "Metro Line 2 trains are running on a 12-minute interval due to overnight track inspection.", flawed: false, why: "Standard verifiable operational schedule." },
+        { id: "v2", text: "A 2026 WHO study guarantees zero airborne illness transmission on electric buses nationwide.", flawed: true, why: "Fabricated study and impossible absolute medical guarantee." },
+        { id: "v3", text: "Station elevators at Central Hub are temporarily closed; shuttle vans depart from Gate B.", flawed: false, why: "Concrete, actionable service alternative." },
+        { id: "v4", text: "City Ordinance 99-Z mandates a $5,000 instant fine for carrying any umbrella on escalators.", flawed: true, why: "Fabricated civic ordinance — classic hallucinated rule." },
+        { id: "v5", text: "98.4% of commuters voted Metro Line 4 the safest railway in human history.", flawed: true, why: "Implausible unsourced statistic with hyperbolic claim." },
+      ],
+    },
+  },
+  {
+    id: "tool-token-budget",
+    title: "Token Budget Showdown",
+    domain: "tools",
+    worldId: "tool-forge",
+    difficulty: "Intermediate",
+    minutes: 6,
+    type: "token-budget",
+    summary: "Select the leanest tool+context strategy that stays under the token ceiling with full accuracy.",
+    scenario:
+      "You must answer customer policy questions across a 400-page PDF handbook under a strict 4,000-token request budget and <2s latency.",
+    task: "Pick the optimal architecture and justify why full-document pasting fails.",
+    hints: ["Think retrieval chunking + citation IDs instead of dumping 400 pages.", "Explain token cost and needle-in-a-haystack dilution."],
+    requirements: ["Choose chunked retrieval", "Explain token/cost and accuracy limits"],
+    payload: {
+      kind: "choice",
+      prompt: "Which tool strategy answers 400-page handbook queries under 4,000 tokens?",
+      options: [
+        { id: "a", label: "Strategy A", text: "Concatenate all 400 pages into every prompt so the model sees everything at once.", quality: 0.1, why: "Exceeds 4,000 tokens drastically and explodes latency and cost." },
+        { id: "b", label: "Strategy B", text: "Index the PDF by section heading, retrieve the top 3 relevant chunks (~1,200 tokens) with page numbers, and instruct the model to cite section IDs or reply 'Not covered'.", quality: 1, why: "Fits well within budget, preserves citations, and prevents guessing." },
+        { id: "c", label: "Strategy C", text: "Drop the context completely and rely on model memory of standard HR policies.", quality: 0.05, why: "Hallucinates generic policy instead of company rules." },
+      ],
+      justification: {
+        criterion: "efficiency",
+        weight: 40,
+        need: 2,
+        signals: [
+          { re: "token|budget|cost|limit|latency", label: "Addresses token budget & latency", tip: "Explain how chunking respects the 4,000-token budget." },
+          { re: "chunk|retriev|index|relevant|section|page", label: "Explains targeted retrieval", tip: "Reference retrieving top relevant chunks with page citations." },
+          { re: "cite|not covered|hallucinat|accura", label: "Highlights grounding", tip: "Mention grounding with section IDs or 'Not covered'." },
+        ],
+      },
+    },
+  },
+  {
+    id: "automation-boss-orchestrator",
+    title: "Boss: Stabilise the Workflow Grid",
+    domain: "workflow",
+    worldId: "automation-factory",
+    difficulty: "Advanced",
+    minutes: 10,
+    isBoss: true,
+    type: "workflow-design",
+    summary: "Rebuild Automation Factory's invoice pipeline with human-in-the-loop anomaly gates.",
+    scenario:
+      "The factory's AI invoice processor is paying duplicate bills automatically. Re-architect the pipeline sequence safely.",
+    task: "Order the verified stages and reject unsafe shortcuts.",
+    hints: ["Extract -> Match PO/Duplicate Check -> Anomaly Human Gate -> Ledger Sync -> Audit Log."],
+    requirements: ["Order safe validation stages", "Include human escalation for mismatches", "Reject unverified auto-payouts"],
+    payload: {
+      kind: "workflow",
+      goal: "Zero-fraud automated invoice triage",
+      steps: [
+        { id: "ocr", label: "Extract invoice fields with schema validation", detail: "Parse vendor, PO number, tax ID, and line totals into JSON.", order: 1, why: "Structured extraction enables deterministic checks." },
+        { id: "match", label: "Cross-check against PO & duplicate ledger", detail: "Run deterministic SQL check for matching purchase orders and duplicates.", order: 2, why: "Normal code catches math and duplicates reliably." },
+        { id: "gate", label: "Route mismatches > $500 to human approver", detail: "Pause any unmatched or high-value invoice for finance sign-off.", order: 3, verify: true, why: "Keeps humans controlling capital outflows." },
+        { id: "audit", label: "Log decision & sample 5% weekly audits", detail: "Store confidence scores, approver ID, and source PDF link.", order: 4, verify: true, why: "Preserves compliance traceability." },
+        { id: "autopay", label: "Auto-wire funds immediately after AI OCR", detail: "Execute bank transfer on raw model output.", risky: true, why: "Prompt injection or OCR slips could drain funds." },
+      ],
+    },
+  },
+  {
+    id: "ethics-boss-charter",
+    title: "Boss: Defend the Ethics Citadel",
+    domain: "responsible",
+    worldId: "ethics-citadel",
+    difficulty: "Advanced",
+    minutes: 8,
+    isBoss: true,
+    type: "risk-classify",
+    summary: "Audit 5 civic & healthcare AI proposals under safety, privacy, and fairness rules.",
+    scenario:
+      "Ethics Citadel's Oversight Council must clear or halt five high-profile AI deployments before midnight.",
+    task: "Assign low, medium, or high risk to each deployment.",
+    hints: ["Unchecked medical/policing/diagnostic automation is high risk.", "Opt-in accessibility captions with review are lower risk."],
+    requirements: ["Classify all 5 deployments accurately", "Spot biometric & triage hazards"],
+    payload: {
+      kind: "risk",
+      items: [
+        { id: "e1", text: "Auto-prioritising ER ICU beds solely from an unvalidated black-box social score.", level: "high", why: "Life-critical discrimination & opacity hazard." },
+        { id: "e2", text: "Generating draft closed captions for public town-hall videos checked by staff.", level: "low", why: "Accessibility benefit with human editorial review." },
+        { id: "e3", text: "Scraping private student medical notes to train a public third-party chatbot.", level: "high", why: "Severe health privacy violation." },
+        { id: "e4", text: "Suggesting internal IT ticket tags that engineers can override in one click.", level: "low", why: "Reversible, low-stakes productivity helper." },
+        { id: "e5", text: "Drafting multi-language welfare benefit notices reviewed by caseworkers before mailing.", level: "medium", why: "Valuable reach, but translation nuance errors could mislead recipients without check." },
+      ],
+    },
+  },
+  {
+    id: "creative-boss-synthesis",
+    title: "Boss: Awaken the Creative Core",
+    domain: "creative",
+    worldId: "creative-studio",
+    difficulty: "Advanced",
+    minutes: 9,
+    isBoss: true,
+    type: "improve-output",
+    summary: "Transform flat corporate clichés into a vivid, honest interactive museum exhibit campaign.",
+    scenario:
+      "Nova Museum's ocean robotics exhibition is opening to teens and families, but an AI generated lifeless slogans. Rewrite them and explain your editorial choices.",
+    task: "Write 3 punchy slogans anchored in ocean robotics + deep-sea exploration, then critique why the original failed.",
+    hints: ["Bring in concrete imagery: deep trenches, autonomous subs, glowing reefs.", "Explain why generic adjectives fail to move audiences."],
+    requirements: ["3 concrete, specific taglines", "Names robotics/deep-sea hook", "Critiques original & notes test plan"],
+    payload: {
+      kind: "text",
+      source: {
+        label: "Cliché AI output",
+        text: "1. Experience the future of innovation.\n2. Oceans matter more than ever.\n3. Unlocking tomorrow's technology today!",
+      },
+      placeholder: "1. …\n2. …\n3. …\n\nWhy: …",
+      minWords: 35,
+      rubric: [
+        {
+          criterion: "relevance",
+          weight: 30,
+          need: 2,
+          signals: [
+            { re: "ocean|deep|sea|trench|abyss|reef|wave", label: "Grounds in deep-sea setting", tip: "Use vivid ocean or deep-sea imagery." },
+            { re: "robot|drone|sub|sonar|autonomous|sensor", label: "Highlights robotics hook", tip: "Mention ocean robotics, subs, or sonar." },
+          ],
+        },
+        {
+          criterion: "specificity",
+          weight: 25,
+          need: 1,
+          signals: [
+            { re: "(^|\\n)\\s*(1[.)]|-|•).*\\n\\s*(2[.)]|-|•).*\\n\\s*(3[.)]|-|•)", label: "Delivers 3 numbered options", tip: "Write three distinct numbered slogans." },
+          ],
+        },
+        {
+          criterion: "clarity",
+          weight: 25,
+          need: 2,
+          signals: [
+            { re: "clich|generic|vague|meaningless|could apply to anything|replaced", label: "Diagnoses original clichés", tip: "Explain why 'future of innovation' is generic." },
+            { re: "why|because|concrete|sensory|family|teen", label: "Explains audience appeal", tip: "Explain how sensory details appeal to teens/families." },
+          ],
+        },
+        {
+          criterion: "verification",
+          weight: 20,
+          need: 1,
+          signals: [
+            { re: "test|poll|a/b|visitor|student|feedback", label: "Adds audience validation", tip: "Describe testing options with real visitors or students." },
+          ],
+        },
+      ],
+    },
+  },
+];
+
+export const CHALLENGES = [...CORE_CHALLENGES, ...EXPANDED_WORLD_MISSIONS].map((ch) => ({
+  ...ch,
+  worldId: ch.worldId || DOMAIN_WORLD_MAP[ch.domain] || "prompt-academy",
+}));
+
+export const challengeById = (id) => CHALLENGES.find((c) => c.id === id);
+
+export const challengesByWorld = (worldId) => CHALLENGES.filter((c) => c.worldId === worldId);

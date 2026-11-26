@@ -3,6 +3,7 @@ import { AlertCircle, ArrowRight, Bookmark, CheckCircle2, Clock, RefreshCw } fro
 import { Button } from "@/components/ui/button";
 import { domainById, TYPE_LABEL } from "@/lib/arena/domains";
 import { gradeFromScore, submissionEfficiency } from "@/lib/arena/game";
+import { playClick } from "@/lib/arena/sound";
 import { toggleSavedChallenge } from "@/lib/arena/storage";
 import type { Challenge, Difficulty, Grade, Submission } from "@/lib/arena/types";
 import { cn } from "@/lib/utils";
@@ -47,20 +48,33 @@ export function MissionCard({
   challenge,
   bestSubmission,
   isSaved,
+  stageNumber,
 }: {
   challenge: Challenge;
   bestSubmission?: Submission | undefined;
   isSaved?: boolean | undefined;
+  stageNumber?: number | undefined;
 }) {
   const domain = domainById(challenge.domain);
   const eff = bestSubmission ? submissionEfficiency(bestSubmission) : null;
   const grade = bestSubmission ? (bestSubmission.grade ?? gradeFromScore(eff!)) : null;
+  const cleared = Boolean(bestSubmission && bestSubmission.score >= 50);
 
   return (
-    <article className="flex flex-col justify-between rounded-xl border border-border bg-card p-5 text-foreground transition-[border-color,box-shadow] duration-150 hover:border-highlight/50 hover:shadow-[0_8px_24px_rgba(79,70,229,0.22)]">
+    <article
+      className={cn(
+        "flex flex-col justify-between rounded-xl border bg-card p-5 text-foreground transition-[border-color,box-shadow] duration-150 hover:border-highlight/60 hover:shadow-[0_8px_24px_rgba(79,70,229,0.25)]",
+        cleared ? "border-highlight/30" : "border-border",
+      )}
+    >
       <div>
         <div className="flex items-start justify-between gap-2">
           <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            {stageNumber !== undefined && (
+              <span className="font-mono text-highlight tabular">
+                STAGE {String(stageNumber).padStart(2, "0")}
+              </span>
+            )}
             <span className="tag border-border bg-secondary text-foreground">
               <domain.icon className="h-3.5 w-3.5 text-highlight" strokeWidth={1.5} aria-hidden />
               {domain.label}
@@ -83,7 +97,10 @@ export function MissionCard({
           </div>
           <button
             type="button"
-            onClick={() => toggleSavedChallenge(challenge.id)}
+            onClick={() => {
+              playClick();
+              toggleSavedChallenge(challenge.id);
+            }}
             aria-label={isSaved ? "Remove bookmark" : "Bookmark mission"}
             className={cn(
               "rounded-md p-1.5 transition-colors duration-150 hover:bg-secondary",
@@ -127,7 +144,7 @@ export function MissionCard({
             <GradeBadge grade={grade} />
             <div className="text-xs tabular">
               <div className="flex items-center gap-1 font-medium text-foreground">
-                {bestSubmission.score >= 50 ? (
+                {cleared ? (
                   <CheckCircle2 className="h-3.5 w-3.5 text-success" strokeWidth={1.5} aria-hidden />
                 ) : (
                   <AlertCircle className="h-3.5 w-3.5 text-destructive" strokeWidth={1.5} aria-hidden />
@@ -135,19 +152,19 @@ export function MissionCard({
                 <span className="text-highlight">{eff}% efficiency</span>
               </div>
               <div className="font-mono text-muted-foreground">
-                Rubric {bestSubmission.score}/100
+                {cleared ? "CLEARED" : "RETRY"} · Rubric {bestSubmission.score}/100
               </div>
             </div>
           </div>
         ) : (
           <span className="font-mono text-xs text-nebula tabular">
-            Up to +{Math.round(100 * (challenge.difficulty === "Advanced" ? 1.5 : challenge.difficulty === "Intermediate" ? 1.25 : 1) + 80)} XP
+            BOUNTY +{Math.round(100 * (challenge.difficulty === "Advanced" ? 1.5 : challenge.difficulty === "Intermediate" ? 1.25 : 1) + 80)} XP
           </span>
         )}
 
         <Button asChild size="sm" variant={bestSubmission ? "outline" : "hero"}>
-          <Link to="/play/$id" params={{ id: challenge.id }}>
-            {bestSubmission ? "Replay" : "Start mission"}
+          <Link to="/play/$id" params={{ id: challenge.id }} onClick={() => playClick()}>
+            {bestSubmission ? "Replay stage" : "Play stage"}
             <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden />
           </Link>
         </Button>

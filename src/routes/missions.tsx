@@ -61,12 +61,14 @@ function MissionsPage() {
   };
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-medium">Missions</h1>
+          <div className="font-mono text-xs text-highlight">CAMPAIGN STAGE SELECT</div>
+          <h1 className="mt-1 text-3xl font-semibold">Sector missions</h1>
           <p className="mt-1 text-sm text-muted-foreground tabular">
-            {stats.completedIds.length} of {CHALLENGES.length} cleared
+            {stats.completedIds.length} of {CHALLENGES.length} stages cleared · Average efficiency{" "}
+            {stats.completedIds.length ? `${stats.averageEfficiency}%` : "—"}
           </p>
         </div>
         <div className="relative w-full sm:w-72">
@@ -211,6 +213,7 @@ function MissionsPage() {
             <MissionCard
               key={c.id}
               challenge={c}
+              stageNumber={CHALLENGES.findIndex((x) => x.id === c.id) + 1}
               bestSubmission={stats.bestByChallenge[c.id]}
               isSaved={state.saved.includes(c.id)}
             />

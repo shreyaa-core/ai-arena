@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowDown,
   ArrowUp,
@@ -30,6 +30,7 @@ import {
 } from "@/lib/arena/game";
 import { criterionLabel, evaluateRubric, wordCount } from "@/lib/arena/scoring";
 import { simulatePromptOutput, type SimulationPreview } from "@/lib/arena/simulator";
+import { playClick, playLock, playResult, playShuffle } from "@/lib/arena/sound";
 import { recordSubmission, toggleSavedChallenge, useArenaState } from "@/lib/arena/storage";
 import type {
   Challenge,
@@ -145,14 +146,26 @@ export function ChallengeRunner({
     }));
   }, [activeChallenge, response]);
 
+  const matchedCount = liveSignals.filter((s) => s.matched).length;
+  const prevMatchedRef = useRef(0);
+  useEffect(() => {
+    if (matchedCount > prevMatchedRef.current) {
+      playLock();
+    }
+    prevMatchedRef.current = matchedCount;
+  }, [matchedCount]);
+
   const handleShuffle = () => {
     if (!challenge.dynamic) return;
+    playShuffle();
+    prevMatchedRef.current = 0;
     const fresh = materializeChallenge(challenge, Date.now() + Math.floor(Math.random() * 100000));
     resetForChallenge(fresh);
   };
 
   const handleSimulate = () => {
     if (response.kind !== "text") return;
+    playClick();
     const preview = simulatePromptOutput(activeChallenge, response.text);
     setSimulation(preview);
     setTurnsUsed((t) => t + 1);
@@ -187,6 +200,7 @@ export function ChallengeRunner({
         at: new Date().toISOString(),
       };
       recordSubmission(sub);
+      playResult(evaluation.score >= 50);
       setOutcome({ evaluation, efficiency, seconds: Math.max(5, seconds) });
 
       toast.success(`Grade ${efficiency.grade} (+${efficiency.xpEarned} XP)`, {
@@ -207,61 +221,91 @@ export function ChallengeRunner({
   };
 
   const overtime = seconds > parSeconds;
+  const speedRatio = seconds / Math.max(60, parSeconds);
+  const liveSpeedPct =
+    speedRatio <= 0.5
+      ? 100
+      : speedRatio <= 1
+        ? Math.round(100 - ((speedRatio - 0.5) / 0.5) * 25)
+        : Math.max(35, Math.round(75 - (speedRatio - 1) * 35));
+  const speedTier =
+    speedRatio <= 0.5 ? "SPEEDRUN" : speedRatio <= 1 ? "ON PAR" : "OVERTIME";
 
   return (
-    <div className="space-y-6">
-      {/* Live Mission Telemetry Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3">
-        <div className="flex flex-wrap items-center gap-2 text-xs">
-          {modeLabel && (
-            <span className="tag border-primary/50 bg-primary/20 text-foreground font-mono">
-              {modeLabel}
+    <div className="space-y-5">
+      {/* Live Mission Game HUD */}
+      <div className="rounded-xl border border-primary/40 bg-card px-4 py-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-2 text-xs">
+            {modeLabel && (
+              <span className="tag border-primary/50 bg-primary/20 text-foreground font-mono">
+                {modeLabel}
+              </span>
+            )}
+            <span className="tag border-border bg-secondary text-foreground">
+              <domain.icon className="h-3.5 w-3.5 text-highlight" strokeWidth={1.5} aria-hidden />
+              {domain.label}
             </span>
-          )}
-          <span className="tag border-border bg-secondary text-foreground">
-            <domain.icon className="h-3.5 w-3.5 text-highlight" strokeWidth={1.5} aria-hidden />
-            {domain.label}
-          </span>
-          <span className="text-muted-foreground">{TYPE_LABEL[activeChallenge.type]}</span>
-          <span className="text-muted-foreground">{activeChallenge.difficulty}</span>
-          {activeChallenge.dynamic && !outcome && (
-            <Button type="button" size="sm" variant="outline" onClick={handleShuffle}>
-              <RefreshCw className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden />
-              New target
-            </Button>
-          )}
+            <span className="text-muted-foreground">{TYPE_LABEL[activeChallenge.type]}</span>
+            <span className="text-muted-foreground">{activeChallenge.difficulty}</span>
+            {activeChallenge.dynamic && !outcome && (
+              <Button type="button" size="sm" variant="outline" onClick={handleShuffle}>
+                <RefreshCw className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden />
+                New target
+              </Button>
+            )}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3 text-xs">
+            <span
+              className={cn(
+                "keycap",
+                overtime ? "border-warning/60 text-warning" : "border-highlight/45 text-highlight",
+              )}
+            >
+              <Clock className="mr-1.5 h-3.5 w-3.5" strokeWidth={1.5} aria-hidden />
+              {formatDuration(seconds)} / {formatDuration(parSeconds)} par
+            </span>
+            {activeChallenge.payload.kind === "text" && (
+              <span className="font-mono text-highlight tabular">
+                {turnsUsed === 0 ? "1-SHOT READY" : `${turnsUsed} SIM RUNS`}
+              </span>
+            )}
+            <span className="font-mono text-nebula tabular">
+              HINTS {hintsShown}/{activeChallenge.hints.length}
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                playClick();
+                toggleSavedChallenge(activeChallenge.id);
+              }}
+              aria-label={isSaved ? "Remove bookmark" : "Bookmark mission"}
+              className={cn(
+                "rounded-md border border-border p-1.5 transition-colors duration-150 hover:bg-secondary",
+                isSaved ? "text-highlight" : "text-muted-foreground",
+              )}
+            >
+              <Bookmark className="h-4 w-4" strokeWidth={1.5} fill={isSaved ? "currentColor" : "none"} />
+            </button>
+          </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 text-xs">
-          <span
-            className={cn(
-              "keycap",
-              overtime ? "border-warning/60 text-warning" : "border-highlight/45 text-highlight",
-            )}
-          >
-            <Clock className="mr-1.5 h-3.5 w-3.5" strokeWidth={1.5} aria-hidden />
-            {formatDuration(seconds)} / {formatDuration(parSeconds)} par
-          </span>
-          {activeChallenge.payload.kind === "text" && (
-            <span className="font-mono text-highlight tabular">
-              {turnsUsed === 0 ? "1-shot ready" : `${turnsUsed} sim runs`}
-            </span>
-          )}
-          <span className="font-mono text-nebula tabular">
-            Hints {hintsShown}/{activeChallenge.hints.length}
-          </span>
-          <button
-            type="button"
-            onClick={() => toggleSavedChallenge(activeChallenge.id)}
-            aria-label={isSaved ? "Remove bookmark" : "Bookmark mission"}
-            className={cn(
-              "rounded-md border border-border p-1.5 transition-colors duration-150 hover:bg-secondary",
-              isSaved ? "text-highlight" : "text-muted-foreground",
-            )}
-          >
-            <Bookmark className="h-4 w-4" strokeWidth={1.5} fill={isSaved ? "currentColor" : "none"} />
-          </button>
-        </div>
+        {!outcome && (
+          <div className="mt-2.5 flex items-center gap-3 border-t border-border/70 pt-2.5 text-[11px] font-mono">
+            <span className={overtime ? "text-warning" : "text-highlight"}>{speedTier}</span>
+            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-secondary">
+              <div
+                className={cn(
+                  "h-full transition-[width] duration-500",
+                  overtime ? "bg-warning" : "bg-highlight",
+                )}
+                style={{ width: `${liveSpeedPct}%` }}
+              />
+            </div>
+            <span className="text-muted-foreground tabular">SPEED BONUS {liveSpeedPct}%</span>
+          </div>
+        )}
       </div>
 
       {outcome ? (

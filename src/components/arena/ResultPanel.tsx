@@ -1,9 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, CheckCircle2, RotateCcw, TrendingUp, XCircle } from "lucide-react";
+import { ArrowRight, CheckCircle2, RotateCcw, TrendingUp, Trophy, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { formatDuration } from "@/lib/arena/game";
+import { computePlayerStats, formatDuration } from "@/lib/arena/game";
 import { criterionLabel } from "@/lib/arena/scoring";
+import { playClick } from "@/lib/arena/sound";
+import { useArenaState } from "@/lib/arena/storage";
 import type { Challenge, EfficiencyBreakdown, EvaluationResult } from "@/lib/arena/types";
 import { GradeBadge } from "./MissionCard";
 
@@ -26,37 +28,56 @@ export function ResultPanel({
   onNext?: (() => void) | undefined;
   nextLabel?: string | undefined;
 }) {
+  const state = useArenaState();
+  const stats = computePlayerStats(state);
+  const passed = evaluation.score >= 50;
+
   return (
     <div className="space-y-6">
-      <div className="rounded-xl border border-primary/40 bg-card p-6 text-foreground">
+      <div className="rounded-xl border border-primary/50 bg-card p-6 text-foreground shadow-[0_12px_40px_-14px_oklch(0.515_0.235_272/0.45)]">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <GradeBadge grade={efficiency.grade} size="lg" />
             <div>
-              <div className="flex flex-wrap items-center gap-2 text-xs text-highlight">
-                <span>Mission debrief</span>
+              <div className="flex flex-wrap items-center gap-2 font-mono text-xs">
+                <span className={passed ? "text-success font-semibold" : "text-destructive font-semibold"}>
+                  {passed ? "STAGE CLEARED" : "STAGE FAILED — RETRY"}
+                </span>
                 {efficiency.signalDensity && (
                   <span className="tag border-primary/40 bg-secondary text-foreground">
                     Signal: {efficiency.signalDensity}
                   </span>
                 )}
               </div>
-              <h2 className="mt-1 text-2xl font-medium tabular">
+              <h2 className="mt-1 text-2xl font-semibold tabular">
                 {efficiency.efficiency}% AI efficiency
               </h2>
               <p className="mt-0.5 text-sm text-muted-foreground tabular">
-                {challenge.title} in {formatDuration(elapsedSeconds)} (par{" "}
+                {challenge.title} · {formatDuration(elapsedSeconds)} (par{" "}
                 {formatDuration(efficiency.parSeconds)})
               </p>
             </div>
           </div>
 
-          <div className="rounded-lg border border-nebula/45 bg-secondary px-4 py-2.5 text-right">
-            <div className="text-xs text-muted-foreground">XP earned</div>
-            <div className="font-mono text-2xl font-medium text-nebula tabular">
+          <div className="rounded-lg border border-nebula/50 bg-secondary px-4 py-2.5 text-right">
+            <div className="font-mono text-[11px] text-muted-foreground">XP REWARD</div>
+            <div className="font-mono text-2xl font-semibold text-nebula tabular">
               +{efficiency.xpEarned}
             </div>
           </div>
+        </div>
+
+        <div className="mt-4 rounded-lg border border-border bg-background/60 px-3.5 py-2.5">
+          <div className="flex items-center justify-between font-mono text-xs">
+            <span className="flex items-center gap-1.5 text-highlight">
+              <Trophy className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden />
+              LV.{stats.rank.level} {stats.rank.title.toUpperCase()}
+            </span>
+            <span className="text-muted-foreground tabular">
+              {stats.totalXp} XP {stats.rank.nextXp ? `/ ${stats.rank.nextXp}` : "MAX"}
+            </span>
+          </div>
+          <Progress value={stats.rankProgress} className="mt-2 h-1.5" />
         </div>
 
         {efficiency.bonuses.length > 0 && (
@@ -181,25 +202,41 @@ export function ResultPanel({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap gap-2">
           {onRetry && (
-            <Button type="button" variant="outline" onClick={onRetry}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                playClick();
+                onRetry();
+              }}
+            >
               <RotateCcw className="h-4 w-4" strokeWidth={1.5} aria-hidden />
-              Retry for higher grade
+              Replay stage
             </Button>
           )}
           <Button asChild variant="subtle">
-            <Link to="/profile">View skill report</Link>
+            <Link to="/profile" onClick={() => playClick()}>
+              Open pilot hangar
+            </Link>
           </Button>
         </div>
 
         {onNext ? (
-          <Button type="button" variant="hero" onClick={onNext}>
+          <Button
+            type="button"
+            variant="hero"
+            onClick={() => {
+              playClick();
+              onNext();
+            }}
+          >
             {nextLabel}
             <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden />
           </Button>
         ) : nextChallenge ? (
           <Button asChild variant="hero">
-            <Link to="/play/$id" params={{ id: nextChallenge.id }}>
-              Next: {nextChallenge.title}
+            <Link to="/play/$id" params={{ id: nextChallenge.id }} onClick={() => playClick()}>
+              Next stage: {nextChallenge.title}
               <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden />
             </Link>
           </Button>

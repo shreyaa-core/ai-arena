@@ -20,7 +20,7 @@ export const env = {
   accessTtl: process.env.JWT_ACCESS_TTL || "15m",
   refreshTtlDays: Number(process.env.JWT_REFRESH_DAYS || 14),
   groqApiKey: process.env.GROQ_API_KEY || "",
-  groqModel: process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
+  groqModel: process.env.GROQ_MODEL || "llama-3.1-8b-instant",
   groqWhisperModel: process.env.GROQ_WHISPER_MODEL || "whisper-large-v3-turbo",
   geminiApiKey: process.env.GEMINI_API_KEY || "",
   geminiModel: process.env.GEMINI_MODEL || "gemini-2.0-flash",

@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
+import { env } from "../../server/config/env.js";
 import { checkAndIncrementMemoryQuota, sanitizeForPrompt } from "../../server/services/ai/aiGateway.js";
 import { callGroqChat } from "../../server/services/ai/groqAdapter.js";
 import { evaluatePromptWithAi } from "../../server/services/ai/hybridEvaluator.js";
@@ -18,19 +19,25 @@ describe("AI Gateway safety, quota, and mocked adapter behavior", () => {
   });
 
   it("reports AI_UNCONFIGURED when Groq API key is absent", async () => {
-    await assert.rejects(
-      () => callGroqChat({ messages: [{ role: "user", content: "hi" }] }),
-      (err) => err.code === "AI_UNCONFIGURED",
-    );
+    const prevKey = env.groqApiKey;
+    env.groqApiKey = "";
+    try {
+      await assert.rejects(
+        () => callGroqChat({ messages: [{ role: "user", content: "hi" }] }),
+        (err) => err.code === "AI_UNCONFIGURED",
+      );
 
-    const evalRes = await evaluatePromptWithAi({
-      actorKey: "test-actor",
-      challengeTitle: "Test",
-      scenario: "Scenario",
-      task: "Task",
-      promptText: "Prompt",
-    });
-    assert.equal(evalRes.status, "unavailable");
-    assert.equal(evalRes.configured, false);
+      const evalRes = await evaluatePromptWithAi({
+        actorKey: "test-actor",
+        challengeTitle: "Test",
+        scenario: "Scenario",
+        task: "Task",
+        promptText: "Prompt",
+      });
+      assert.equal(evalRes.status, "unavailable");
+      assert.equal(evalRes.configured, false);
+    } finally {
+      env.groqApiKey = prevKey;
+    }
   });
 });

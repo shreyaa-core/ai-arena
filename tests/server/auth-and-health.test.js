@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import http from "node:http";
 import { after, before, describe, it } from "node:test";
 import { createApp } from "../../server/app.js";
+import { env } from "../../server/config/env.js";
 import { signAccessToken } from "../../server/middleware/auth.js";
 
 describe("Express app health, auth guards, and RBAC (mocked/local HTTP)", () => {
@@ -44,14 +45,20 @@ describe("Express app health, auth guards, and RBAC (mocked/local HTTP)", () => 
   });
 
   it("returns 503 unavailable when Groq AI key is absent rather than faking AI responses", async () => {
-    const res = await fetch(`${baseUrl}/api/ai/chat`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: "Help me write a clearer prompt", language: "en" }),
-    });
-    assert.equal(res.status, 503);
-    const body = await res.json();
-    assert.equal(body.status, "unavailable");
-    assert.equal(body.configured, false);
+    const prevKey = env.groqApiKey;
+    env.groqApiKey = "";
+    try {
+      const res = await fetch(`${baseUrl}/api/ai/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: "Help me write a clearer prompt", language: "en" }),
+      });
+      assert.equal(res.status, 503);
+      const body = await res.json();
+      assert.equal(body.status, "unavailable");
+      assert.equal(body.configured, false);
+    } finally {
+      env.groqApiKey = prevKey;
+    }
   });
 });

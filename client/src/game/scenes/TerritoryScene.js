@@ -223,10 +223,20 @@ export class TerritoryScene extends Phaser.Scene {
       .setDepth(50)
       .setVisible(false);
 
-    // Keyboard & Click-to-move controls
-    this.cursors = this.input.keyboard.createCursorKeys();
-    this.wasd = this.input.keyboard.addKeys("W,A,S,D");
-    this.keyE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+    // Keyboard & Click-to-move controls (disableGlobalCapture + enableCapture=false so <input>/<textarea> always receive W/A/S/D/E/Arrows)
+    this.input.keyboard.disableGlobalCapture();
+    this.input.keyboard.clearCaptures();
+    this.cursors = this.input.keyboard.addKeys(
+      {
+        up: Phaser.Input.Keyboard.KeyCodes.UP,
+        down: Phaser.Input.Keyboard.KeyCodes.DOWN,
+        left: Phaser.Input.Keyboard.KeyCodes.LEFT,
+        right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
+      },
+      false,
+    );
+    this.wasd = this.input.keyboard.addKeys("W,A,S,D", false);
+    this.keyE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E, false);
 
     this.input.on("pointerdown", (pointer, currentlyOver) => {
       if (currentlyOver && currentlyOver.length > 0) return;
@@ -247,6 +257,20 @@ export class TerritoryScene extends Phaser.Scene {
 
   update(_time, _delta) {
     if (!this.player?.body) return;
+
+    const activeEl = typeof document !== "undefined" ? document.activeElement : null;
+    const isTyping =
+      activeEl &&
+      (activeEl.tagName === "INPUT" ||
+        activeEl.tagName === "TEXTAREA" ||
+        activeEl.tagName === "SELECT" ||
+        activeEl.isContentEditable);
+
+    if (isTyping || !this.input.keyboard.enabled) {
+      this.moveTarget = null;
+      this.player.body.setVelocity(0, 0);
+      return;
+    }
 
     let vx = 0;
     let vy = 0;

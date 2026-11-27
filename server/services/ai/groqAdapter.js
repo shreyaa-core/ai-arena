@@ -4,7 +4,30 @@ export function isGroqConfigured() {
   return Boolean(env.groqApiKey && env.groqApiKey.trim().length > 10);
 }
 
-export async function callGroqChat({ messages, temperature = 0.4, maxTokens = 450, timeoutMs = 15000, fetchImpl = fetch }) {
+async function discoverFallbackGroqModel(fetchImpl) {
+  try {
+    const res = await fetchImpl("https://api.groq.com/openai/v1/models", {
+      headers: { Authorization: `Bearer ${env.groqApiKey}` },
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const list = Array.isArray(data?.data) ? data.data : [];
+    const candidate = list.find(
+      (m) => m?.id && !/whisper|guard|tts|playai/i.test(m.id),
+    );
+    return candidate?.id || null;
+  } catch {
+    return null;
+  }
+}
+
+export async function callGroqChat({
+  messages,
+  temperature = 0.4,
+  maxTokens = 450,
+  timeoutMs = 15000,
+  fetchImpl = fetch,
+}) {
   if (!isGroqConfigured()) {
     const err = new Error("GROQ_API_KEY is not configured.");
     err.code = "AI_UNCONFIGURED";
@@ -15,7 +38,7 @@ export async function callGroqChat({ messages, temperature = 0.4, maxTokens = 45
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   const startedAt = Date.now();
 
-  try {
+  const sendReq = async (modelId) => {
     const res = await fetchImpl("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -23,13 +46,27 @@ export async function callGroqChat({ messages, temperature = 0.4, maxTokens = 45
         Authorization: `Bearer ${env.groqApiKey}`,
       },
       body: JSON.stringify({
-        model: env.groqModel,
+        model: modelId,
         messages,
         temperature,
         max_tokens: maxTokens,
       }),
       signal: controller.signal,
     });
+    return res;
+  };
+
+  try {
+    let activeModel = env.groqModel || "llama-3.1-8b-instant";
+    let res = await sendReq(activeModel);
+
+    if (res.status === 404) {
+      const altModel = await discoverFallbackGroqModel(fetchImpl);
+      if (altModel && altModel !== activeModel) {
+        activeModel = altModel;
+        res = await sendReq(activeModel);
+      }
+    }
 
     if (!res.ok) {
       const txt = await res.text().catch(() => "");
@@ -43,7 +80,7 @@ export async function callGroqChat({ messages, temperature = 0.4, maxTokens = 45
     const content = data?.choices?.[0]?.message?.content || "";
     return {
       provider: "groq",
-      model: data.model || env.groqModel,
+      model: data.model || activeModel,
       content,
       usage: {
         promptTokens: data?.usage?.prompt_tokens || 0,

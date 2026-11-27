@@ -73,6 +73,7 @@ function GameRoot() {
         activeWorldId={activeWorldId}
         state={state}
         stats={stats}
+        hasOpenModal={Boolean(activeModal)}
         onSelectWorld={handleSelectWorld}
         onActivateStation={handleActivateStation}
       />

@@ -9,6 +9,7 @@ export function PhaserViewport({
   activeWorldId,
   state,
   stats,
+  hasOpenModal = false,
   onSelectWorld,
   onActivateStation,
 }) {
@@ -49,6 +50,24 @@ export function PhaserViewport({
       unsubStation();
     };
   }, [onSelectWorld, onActivateStation]);
+
+  // Disable scene-level Phaser keyboard processing while any overlay modal is open
+  useEffect(() => {
+    const game = gameRef.current;
+    if (!game) return;
+    if (game.input?.keyboard) {
+      game.input.keyboard.preventDefault = false;
+    }
+    const activeScenes = game.scene?.getScenes?.(true) || [];
+    for (const sc of activeScenes) {
+      if (sc.input?.keyboard) {
+        sc.input.keyboard.enabled = !hasOpenModal;
+        if (hasOpenModal && typeof sc.input.keyboard.resetKeys === "function") {
+          sc.input.keyboard.resetKeys();
+        }
+      }
+    }
+  }, [hasOpenModal, screen, activeWorldId]);
 
   // Switch active Phaser scene cleanly when screen, worldId, or progression changes
   useEffect(() => {

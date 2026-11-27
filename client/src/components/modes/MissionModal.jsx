@@ -168,8 +168,8 @@ export function MissionModal() {
               </Button>
             </div>
           </div>
-          <p className="mt-2 text-sm leading-relaxed text-slate-200">{challenge.scenario}</p>
-          <p className="mt-2 text-xs font-semibold text-amber-300">Objective: {challenge.task}</p>
+          <p className="mt-2.5 text-base leading-relaxed text-slate-100">{challenge.scenario}</p>
+          <p className="mt-2.5 text-sm font-semibold text-amber-300">Objective: {challenge.task}</p>
         </div>
 
         {/* Visual Prompt Reference (Static image or Procedural SVG Scene) */}
@@ -205,7 +205,7 @@ export function MissionModal() {
               placeholder={challenge.payload.placeholder}
               disabled={Boolean(result)}
             />
-            <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
+            <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-slate-300">
               <span>~{estimateTokens(textVal)} tokens · Target ≥ {challenge.payload.minWords} words</span>
               <div className="flex items-center gap-2">
                 {serverHealth.groqConfigured && (
@@ -258,7 +258,7 @@ export function MissionModal() {
                       prev.includes(seg.id) ? prev.filter((x) => x !== seg.id) : [...prev, seg.id],
                     )
                   }
-                  className={`flex w-full items-start gap-3 rounded-xl border p-3 text-left text-xs transition ${
+                  className={`flex w-full items-start gap-3 rounded-xl border p-3.5 text-left text-sm transition ${
                     checked
                       ? "border-rose-400 bg-rose-500/15 text-white"
                       : "border-slate-700 bg-slate-900/60 text-slate-200 hover:border-slate-500"
@@ -276,7 +276,7 @@ export function MissionModal() {
 
         {challenge.payload.kind === "choice" && (
           <div className="space-y-3">
-            <p className="text-xs font-medium text-slate-300">{challenge.payload.prompt}</p>
+            <p className="text-sm font-medium text-slate-200">{challenge.payload.prompt}</p>
             <div className="grid gap-2">
               {challenge.payload.options.map((opt) => (
                 <button
@@ -284,7 +284,7 @@ export function MissionModal() {
                   type="button"
                   disabled={Boolean(result)}
                   onClick={() => setChoiceId(opt.id)}
-                  className={`rounded-xl border p-3 text-left text-xs transition ${
+                  className={`rounded-xl border p-3.5 text-left text-sm transition ${
                     choiceId === opt.id
                       ? "border-teal-400 bg-teal-500/15 text-white"
                       : "border-slate-700 bg-slate-900/60 text-slate-300"
@@ -378,7 +378,7 @@ export function MissionModal() {
         {challenge.payload.kind === "risk" && (
           <div className="space-y-2">
             {challenge.payload.items.map((item) => (
-              <div key={item.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-700 bg-slate-900/60 p-3 text-xs">
+              <div key={item.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-700 bg-slate-900/60 p-3.5 text-sm">
                 <span className="max-w-md text-slate-200">{item.text}</span>
                 <div className="flex gap-1.5">
                   {["low", "medium", "high"].map((lvl) => (
@@ -420,7 +420,7 @@ export function MissionModal() {
               </Button>
             )}
             {challenge.hints.slice(0, hintsShown).map((hint, idx) => (
-              <span key={idx} className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-xs text-amber-200">
+              <span key={idx} className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-sm text-amber-200">
                 {hint}
               </span>
             ))}
@@ -439,11 +439,11 @@ export function MissionModal() {
                   <p className="font-display text-lg font-bold text-white">
                     Efficiency {result.breakdown.efficiency}% · Rubric {result.evaluation.score}/100
                   </p>
-                  <p className="text-xs text-teal-300">
+                  <p className="text-sm text-teal-300">
                     +{result.breakdown.xpEarned} XP · +{result.breakdown.coinsEarned} Coins · Evaluator: {result.evaluation.evaluator}
                   </p>
                   {result.evaluation.aiSummary && (
-                    <p className="mt-1 text-xs text-slate-200">{result.evaluation.aiSummary}</p>
+                    <p className="mt-1.5 text-sm text-slate-200">{result.evaluation.aiSummary}</p>
                   )}
                 </div>
               </div>
@@ -456,16 +456,16 @@ export function MissionModal() {
             </div>
 
             {result.evaluation.strengths?.length > 0 && (
-              <div className="mt-3 space-y-1 text-xs text-emerald-300">
+              <div className="mt-3 space-y-1.5 text-sm text-emerald-300">
                 {result.evaluation.strengths.map((s, i) => (
-                  <p key={i} className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5" /> {s}</p>
+                  <p key={i} className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 shrink-0" /> {s}</p>
                 ))}
               </div>
             )}
             {result.evaluation.improvements?.length > 0 && (
-              <div className="mt-2 space-y-1 text-xs text-amber-300">
+              <div className="mt-2.5 space-y-1.5 text-sm text-amber-300">
                 {result.evaluation.improvements.map((imp, i) => (
-                  <p key={i} className="flex items-center gap-1.5"><AlertTriangle className="h-3.5 w-3.5" /> {imp}</p>
+                  <p key={i} className="flex items-center gap-1.5"><AlertTriangle className="h-4 w-4 shrink-0" /> {imp}</p>
                 ))}
               </div>
             )}

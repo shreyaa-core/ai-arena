@@ -74,22 +74,22 @@ export class WorldMapScene extends Phaser.Scene {
         })
         .setOrigin(0.5);
 
-      const labelBg = this.add.rectangle(0, 42, Math.max(120, world.name.length * 8 + 18), 24, 0x0b132b, 0.88);
+      const labelBg = this.add.rectangle(0, 44, Math.max(138, world.name.length * 9.5 + 22), 28, 0x0b132b, 0.9);
       labelBg.setStrokeStyle(1, unlocked ? world.accentNum : 0x334155, 0.7);
       const label = this.add
-        .text(0, 42, world.name, {
+        .text(0, 44, world.name, {
           fontFamily: "Chakra Petch, sans-serif",
-          fontSize: "12px",
+          fontSize: "15px",
           fontStyle: "bold",
           color: unlocked ? "#F1F5F9" : "#94A3B8",
         })
         .setOrigin(0.5);
 
       const sub = this.add
-        .text(0, 62, restored ? "Restored" : unlocked ? "Available" : `Requires ${world.requiredXp} XP`, {
+        .text(0, 68, restored ? "Restored" : unlocked ? "Available" : `Requires ${world.requiredXp} XP`, {
           fontFamily: "Roboto, sans-serif",
-          fontSize: "10px",
-          color: restored ? "#FBBF24" : unlocked ? world.accent : "#64748B",
+          fontSize: "13px",
+          color: restored ? "#FBBF24" : unlocked ? world.accent : "#94A3B8",
         })
         .setOrigin(0.5);
 

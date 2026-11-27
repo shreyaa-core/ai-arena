@@ -80,8 +80,8 @@ export class TerritoryScene extends Phaser.Scene {
     const npcContainer = this.add.container(npcX, npcY);
     const npcAura = this.add.circle(0, 0, 28, cfg.accentNum, 0.18);
     const npcBody = this.add.circle(0, 0, 18, 0x1e293b, 1).setStrokeStyle(2.5, 0xfbbf24, 0.9);
-    const npcIcon = this.add.text(0, 0, "NPC", { fontFamily: "Chakra Petch", fontSize: "10px", fontStyle: "bold", color: "#FBBF24" }).setOrigin(0.5);
-    const npcLabel = this.add.text(0, 30, cfg.npc.name, { fontFamily: "Chakra Petch", fontSize: "11px", color: "#F1F5F9" }).setOrigin(0.5);
+    const npcIcon = this.add.text(0, 0, "NPC", { fontFamily: "Chakra Petch", fontSize: "12px", fontStyle: "bold", color: "#FBBF24" }).setOrigin(0.5);
+    const npcLabel = this.add.text(0, 32, cfg.npc.name, { fontFamily: "Chakra Petch", fontSize: "14px", color: "#F1F5F9" }).setOrigin(0.5);
     npcContainer.add([npcAura, npcBody, npcIcon, npcLabel]);
     npcContainer.setSize(64, 64).setInteractive({ useHandCursor: true });
     this.tweens.add({ targets: npcBody, y: -4, duration: 1400, yoyo: true, repeat: -1 });
@@ -115,11 +115,11 @@ export class TerritoryScene extends Phaser.Scene {
       }).setOrigin(0.5);
 
       const nameTag = this.add
-        .text(0, 34, st.label, {
+        .text(0, 36, st.label, {
           fontFamily: "Roboto, sans-serif",
-          fontSize: "11px",
+          fontSize: "14px",
           backgroundColor: "#0B132B",
-          padding: { x: 6, y: 2 },
+          padding: { x: 8, y: 3 },
           color: done ? "#86EFAC" : "#F1F5F9",
         })
         .setOrigin(0.5);
@@ -152,7 +152,7 @@ export class TerritoryScene extends Phaser.Scene {
       const col = this.add.container(cfg.collectible.x, cfg.collectible.y);
       const gem = this.add.polygon(0, 0, [0, -14, 12, 0, 0, 14, -12, 0], 0xfbbf24, 0.9);
       gem.setStrokeStyle(2, 0xfef3c7, 1);
-      const lbl = this.add.text(0, 22, cfg.collectible.label, { fontFamily: "Roboto", fontSize: "10px", color: "#FBBF24" }).setOrigin(0.5);
+      const lbl = this.add.text(0, 24, cfg.collectible.label, { fontFamily: "Roboto", fontSize: "13px", color: "#FBBF24" }).setOrigin(0.5);
       col.add([gem, lbl]).setSize(48, 48).setInteractive({ useHandCursor: true });
       this.tweens.add({ targets: gem, angle: 360, duration: 4800, repeat: -1 });
       this.registerInteractable({
@@ -171,7 +171,7 @@ export class TerritoryScene extends Phaser.Scene {
       const sq = this.add.container(cfg.sideQuest.x, cfg.sideQuest.y);
       const ring = this.add.circle(0, 0, 22, 0xa78bfa, 0.2).setStrokeStyle(2, 0xa78bfa, 0.9);
       const ico = this.add.text(0, 0, "◈", { fontFamily: "Chakra Petch", fontSize: "16px", color: "#C4B5FD" }).setOrigin(0.5);
-      const tag = this.add.text(0, 28, cfg.sideQuest.label, { fontFamily: "Roboto", fontSize: "11px", color: "#DDD6FE", backgroundColor: "#0B132B", padding: { x: 5, y: 2 } }).setOrigin(0.5);
+      const tag = this.add.text(0, 30, cfg.sideQuest.label, { fontFamily: "Roboto", fontSize: "14px", color: "#DDD6FE", backgroundColor: "#0B132B", padding: { x: 7, y: 3 } }).setOrigin(0.5);
       sq.add([ring, ico, tag]).setSize(60, 60).setInteractive({ useHandCursor: true });
       this.registerInteractable({
         id: `mode-${cfg.sideQuest.mode}`,
@@ -190,12 +190,12 @@ export class TerritoryScene extends Phaser.Scene {
     const body = this.add.circle(0, 0, 16, this.snapshot.suitHex || 0x14b8a6, 1).setStrokeStyle(2.5, 0xf8fafc, 0.9);
     const visor = this.add.rectangle(4, -3, 14, 7, this.snapshot.visorHex || 0x38bdf8, 1);
     const pName = this.add
-      .text(0, -28, this.snapshot.alias || "Explorer", {
+      .text(0, -30, this.snapshot.alias || "Explorer", {
         fontFamily: "Chakra Petch, sans-serif",
-        fontSize: "11px",
+        fontSize: "14px",
         color: "#F8FAFC",
         backgroundColor: "#0B132B",
-        padding: { x: 5, y: 1 },
+        padding: { x: 7, y: 2 },
       })
       .setOrigin(0.5);
     this.player.add([shadow, body, visor, pName]);
@@ -213,11 +213,11 @@ export class TerritoryScene extends Phaser.Scene {
     this.promptHint = this.add
       .text(190, 310, "", {
         fontFamily: "Chakra Petch, sans-serif",
-        fontSize: "12px",
+        fontSize: "15px",
         fontStyle: "bold",
         color: "#06211E",
         backgroundColor: "#14B8A6",
-        padding: { x: 8, y: 4 },
+        padding: { x: 10, y: 5 },
       })
       .setOrigin(0.5)
       .setDepth(50)

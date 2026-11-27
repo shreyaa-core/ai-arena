@@ -73,4 +73,16 @@ describe("AI Arena client UI & migration helpers", () => {
       expect(screen.getByText(/Efficiency \d+%/i)).toBeInTheDocument();
     });
   });
+
+  it("allows leaving World Map cleanly back to the Title Screen via the HUD Leave button", async () => {
+    localStorage.clear();
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: /Play Game/i }));
+    fireEvent.click(await screen.findByRole("button", { name: /Skip & Start Guest Play Immediately/i }));
+
+    const leaveBtn = await screen.findByRole("button", { name: /^Leave$/i });
+    fireEvent.click(leaveBtn);
+
+    expect(await screen.findByRole("button", { name: /Continue Adventure/i })).toBeInTheDocument();
+  });
 });

@@ -474,7 +474,7 @@ export function MissionModal() {
 
         {!result && (
           <div className="flex justify-end gap-2 border-t border-slate-700/70 pt-3">
-            <Button variant="ghost" onClick={close}>Cancel</Button>
+            <Button variant="ghost" onClick={close}>Leave Mission</Button>
             <Button variant="hero" disabled={busy} onClick={handleSubmit}>
               <Sparkles className="mr-1.5 h-4 w-4" />
               {busy ? "Evaluating…" : "Submit Solution"}

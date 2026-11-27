@@ -6,7 +6,7 @@ import { useGame } from "../../context/GameContext.jsx";
 import { evaluateRubric } from "../../engine/scoring.js";
 import { simulatePromptOutput } from "../../engine/simulator.js";
 import { api } from "../../services/apiClient.js";
-import { connectSocket } from "../../services/socketService.js";
+import { connectSocket, disconnectSocket } from "../../services/socketService.js";
 import { playClick, playCoin, playLevelUp } from "../../utils/sound.js";
 import { recordBlitzRun, recordSubmission } from "../../utils/storage.js";
 import { ModalShell } from "../game/PauseSettingsModals.jsx";
@@ -276,7 +276,20 @@ function DuelContent({ onClose }) {
               </div>
             ) : (
               <div>
-                <p className="font-mono text-amber-300">Room Code: {roomState.code} · Status: {roomState.status}</p>
+                <div className="flex items-center justify-between gap-2">
+                  <p className="font-mono text-amber-300">Room Code: {roomState.code} · Status: {roomState.status}</p>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => {
+                      disconnectSocket();
+                      setRoomState(null);
+                      toast.info("Left multiplayer room.");
+                    }}
+                  >
+                    Leave Room
+                  </Button>
+                </div>
                 <div className="mt-1.5 flex gap-3">
                   {roomState.players.map((p, i) => (
                     <span key={i} className="rounded bg-slate-800 px-2 py-1">
@@ -293,9 +306,12 @@ function DuelContent({ onClose }) {
           <strong>Duel Brief:</strong> {duelChallenge.scenario}
         </p>
         <Textarea rows={4} value={promptVal} onChange={(e) => setPromptVal(e.target.value)} placeholder="Write the sharpest prompt under pressure…" />
-        <Button variant="hero" onClick={submitDuel}>
-          <Swords className="mr-1.5 h-4 w-4" /> Lock Duel Submission
-        </Button>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <Button variant="ghost" onClick={onClose}>Leave Arena</Button>
+          <Button variant="hero" onClick={submitDuel}>
+            <Swords className="mr-1.5 h-4 w-4" /> Lock Duel Submission
+          </Button>
+        </div>
 
         {botResult && (
           <div className="rounded-xl border border-amber-400/40 bg-slate-950 p-3">

@@ -14,6 +14,7 @@ import {
   VolumeX,
   FlaskConical,
   DoorOpen,
+  LogOut,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -95,14 +96,14 @@ export function GameHUD() {
           {screen === "territory" && (
             <Button
               size="sm"
-              variant="ghost"
-              className="h-6 px-2 text-xs text-teal-300"
+              variant="outline"
+              className="h-7 px-2.5 text-xs text-amber-300"
               onClick={() => {
                 playClick();
                 setScreen("worldmap");
               }}
             >
-              World Map
+              Leave Sector
             </Button>
           )}
         </div>
@@ -175,6 +176,20 @@ export function GameHUD() {
           >
             <Pause className="h-4 w-4" />
           </Button>
+          <Button
+            size="sm"
+            variant="destructive"
+            title="Leave to Title Screen"
+            className="h-9 px-3 text-xs font-semibold"
+            onClick={() => {
+              playClick();
+              setActiveModal(null);
+              setScreen("title");
+            }}
+          >
+            <LogOut className="mr-1.5 h-3.5 w-3.5" />
+            Leave
+          </Button>
         </div>
       </div>
 
@@ -237,11 +252,14 @@ export function GameHUD() {
                 </Button>
                 <Button
                   size="sm"
-                  variant="ghost"
-                  className="h-7 px-2 text-xs text-teal-300"
-                  onClick={() => setScreen("worldmap")}
+                  variant="outline"
+                  className="h-7 px-2.5 text-xs text-amber-300"
+                  onClick={() => {
+                    playClick();
+                    setScreen("worldmap");
+                  }}
                 >
-                  {t.worldMap}
+                  Leave Sector
                 </Button>
               </>
             )}

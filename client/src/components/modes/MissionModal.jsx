@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowDown, ArrowUp, Lightbulb, Play, RefreshCw, Sparkles, Volume2, CheckCircle2, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { domainById } from "../../data/domains.js";
@@ -32,6 +32,7 @@ export function MissionModal() {
   const [seconds, setSeconds] = useState(0);
   const [useLiveAi, setUseLiveAi] = useState(false);
   const [busy, setBusy] = useState(false);
+  const resultRef = useRef(null);
 
   useEffect(() => {
     if (!initialChallenge) return;
@@ -87,26 +88,51 @@ export function MissionModal() {
   };
 
   const handleSubmit = async () => {
+    const response = buildResponse();
+    if (response.kind === "text" && !response.text.trim()) {
+      toast.warning("Write your prompt or answer before submitting.");
+      return;
+    }
+    if (response.kind === "choice" && !response.selectedId) {
+      toast.warning("Select one response option before submitting.");
+      return;
+    }
+    if (response.kind === "workflow" && response.orderedIds.length === 0) {
+      toast.warning("Add at least one pipeline block before submitting.");
+      return;
+    }
+    if (response.kind === "risk" && Object.keys(response.answers).length === 0) {
+      toast.warning("Rate at least one risk item before submitting.");
+      return;
+    }
+
     setBusy(true);
     try {
-      const response = buildResponse();
       const evaluation = await evaluate(challenge, response, { useLiveAi });
       const priorSubs = (state.submissions || []).filter((s) => s.challengeId === challenge.id).length;
       const breakdown = computeEfficiency(challenge, evaluation, response, {
         seconds,
-        hintsUsed,
+        hintsUsed: hintsShown,
         turnsUsed,
         isFirstClear: !stats.completedIds.includes(challenge.id),
         currentStreak: stats.currentStreak,
         priorRepeats: priorSubs,
       });
       breakdown.secondsSpent = seconds;
+      breakdown.hintsUsed = hintsShown;
+      breakdown.turnsUsed = turnsUsed;
 
       await saveMissionResult({ challenge, evaluation, breakdown, response, mode });
       setResult({ evaluation, breakdown });
+      toast.success(`Submitted! Grade ${breakdown.grade} · ${breakdown.efficiency}% Efficiency (+${breakdown.xpEarned} XP)`);
       if (challenge.isBoss && evaluation.score >= 60) {
         toast.success(`${challenge.title} cleared — Territory Restored!`);
       }
+      setTimeout(() => {
+        resultRef.current?.scrollIntoView?.({ behavior: "smooth", block: "nearest" });
+      }, 60);
+    } catch (err) {
+      toast.error(`Submission error: ${err?.message || "Unexpected failure"}`);
     } finally {
       setBusy(false);
     }
@@ -403,7 +429,7 @@ export function MissionModal() {
 
         {/* Result Panel */}
         {result && (
-          <div className="rounded-xl border border-teal-400/50 bg-slate-950/90 p-4">
+          <div ref={resultRef} className="rounded-xl border border-teal-400/50 bg-slate-950/90 p-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-3">
                 <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500 font-display text-2xl font-bold text-slate-950">
@@ -416,9 +442,17 @@ export function MissionModal() {
                   <p className="text-xs text-teal-300">
                     +{result.breakdown.xpEarned} XP · +{result.breakdown.coinsEarned} Coins · Evaluator: {result.evaluation.evaluator}
                   </p>
+                  {result.evaluation.aiSummary && (
+                    <p className="mt-1 text-xs text-slate-200">{result.evaluation.aiSummary}</p>
+                  )}
                 </div>
               </div>
-              <Button variant="hero" onClick={close}>Continue Exploration</Button>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" onClick={() => setResult(null)}>
+                  Try Again
+                </Button>
+                <Button variant="hero" onClick={close}>Continue Exploration</Button>
+              </div>
             </div>
 
             {result.evaluation.strengths?.length > 0 && (

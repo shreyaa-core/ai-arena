@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { DynamicScenePreview } from "../../client/src/components/game/DynamicScenePreview.jsx";
 import { generateDynamicVisualChallenge } from "../../client/src/engine/dynamicChallenges.js";
@@ -53,5 +53,24 @@ describe("AI Arena client UI & migration helpers", () => {
     expect(migrated.submissions).toHaveLength(1);
     expect(migrated.coins).toBeGreaterThanOrEqual(100);
     expect(migrated.unlockedWorlds).toContain("prompt-academy");
+  });
+
+  it("submits a mission solution inside Quick Challenge and renders grade + XP result", async () => {
+    localStorage.clear();
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: /Quick Challenge/i }));
+
+    const box = await screen.findByPlaceholderText(/You are a research assistant/i);
+    fireEvent.change(box, {
+      target: {
+        value:
+          "You are a research analyst writing for manager Priya before Friday. Summarize the three remote work studies in under 200 words using plain language bullets, cite each study, include pros and cons, flag uncertainty, and stay neutral.",
+      },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /Submit Solution/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/Efficiency \d+%/i)).toBeInTheDocument();
+    });
   });
 });

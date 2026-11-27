@@ -7,8 +7,7 @@ AI Arena uses PostgreSQL (`pg`) with a 26-table relational schema. Guest gamepla
 1. Open **pgAdmin 4** and connect to your local PostgreSQL server.
 2. Right-click **Databases** -> **Create** -> **Database...** and name it `ai_arena_db`.
 3. Open **Query Tool** on `ai_arena_db`.
-4. Open and execute [`database/schema.sql`](database/schema.sql) to create all tables, constraints, and indexes.
-5. Open and execute [`database/seeds/seed.sql`](database/seeds/seed.sql) to load characters, the 6 territories + Grandmaster Arena, tutorials, skill tree nodes, achievements, daily quests, and cosmetic shop items.
+4. Open and execute [`database/pgadmin_full_setup.sql`](database/pgadmin_full_setup.sql) (or run [`database/schema.sql`](database/schema.sql) followed by [`database/seeds/seed.sql`](database/seeds/seed.sql)) to create all 26 tables, constraints, indexes, and starter game data in one step.
 
 ## Option B — Automated CLI Migration & Seeding
 

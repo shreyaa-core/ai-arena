@@ -1,4 +1,4 @@
-﻿-- AI Arena PostgreSQL Schema (pgAdmin 4 compatible)
+-- AI Arena PostgreSQL Schema (pgAdmin 4 compatible)
 -- Database: ai_arena_db
 
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
@@ -341,7 +341,7 @@ INSERT INTO worlds (id, name, domain, theme_color, unlock_order, required_xp, de
   ('tool-forge', 'Tool Forge', 'tools', '#F59E0B', 3, 250, 'High-precision orbital workshops teaching tool choice, CSV pipelines, and token budgets.', 'tool-for-reviews'),
   ('automation-factory', 'Automation Factory', 'workflow', '#818CF8', 4, 420, 'Multi-stage orchestration plants where human-in-the-loop gates prevent costly failures.', 'automation-boss-orchestrator'),
   ('ethics-citadel', 'Ethics Citadel', 'responsible', '#34D399', 5, 600, 'The governance fortress defending privacy, fairness, and safety across civic AI systems.', 'ethics-boss-charter'),
-  ('creative-studio', 'Creative Studio', 'creative', '#F472B6', 6, 800, 'An experimental synthesis atrium transforming flat clichÃ©s into distinctive original ideas.', 'creative-boss-synthesis'),
+  ('creative-studio', 'Creative Studio', 'creative', '#F472B6', 6, 800, 'An experimental synthesis atrium transforming flat clichés into distinctive original ideas.', 'creative-boss-synthesis'),
   ('grandmaster-arena', 'Grandmaster Arena', 'all', '#FBBF24', 7, 1100, 'The orbital summit testing mastery across every AI competency.', NULL)
 ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, description = EXCLUDED.description, boss_mission_id = EXCLUDED.boss_mission_id;
 
@@ -351,7 +351,7 @@ INSERT INTO tutorials (id, world_id, title, steps_json) VALUES
   ('tut-tools-101', 'tool-forge', 'Choosing the Right Tool & Context', '[{"title":"Know Context Limits","body":"Never paste 10,000 rows directly into chat; combine code execution or chunked search."}]'::jsonb),
   ('tut-workflow-101', 'automation-factory', 'Human-in-the-Loop Gates', '[{"title":"Isolate Irreversible Actions","body":"Redact PII first and require human approval before refunds, payments, or external sends."}]'::jsonb),
   ('tut-ethics-101', 'ethics-citadel', 'Privacy & Risk Triage', '[{"title":"Never Paste Secrets","body":"API keys, private medical records, and customer lists must stay out of public bots."}]'::jsonb),
-  ('tut-creative-101', 'creative-studio', 'Beating Generic ClichÃ©s', '[{"title":"Replace Adjectives with Concrete Detail","body":"Trade vague superlatives for grounded sensory details and constraints."}]'::jsonb)
+  ('tut-creative-101', 'creative-studio', 'Beating Generic Clichés', '[{"title":"Replace Adjectives with Concrete Detail","body":"Trade vague superlatives for grounded sensory details and constraints."}]'::jsonb)
 ON CONFLICT (id) DO UPDATE SET steps_json = EXCLUDED.steps_json;
 
 INSERT INTO skill_tree (id, domain, name, description, cost_points, prerequisite_id) VALUES
@@ -390,4 +390,3 @@ INSERT INTO items (id, name, slot, price_coins, description, metadata_json) VALU
   ('companion-nova-prism', 'NOVA Prism Shell', 'companion', 160, 'Equips NOVA with a faceted golden resonance shell.', '{"shell":"prism"}'::jsonb),
   ('frame-grandmaster', 'Laurel Passport Frame', 'badge_frame', 220, 'Decorative crest border displayed on your public Skill Passport.', '{"border":"gold"}'::jsonb)
 ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, price_coins = EXCLUDED.price_coins;
-

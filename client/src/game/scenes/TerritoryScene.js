@@ -80,8 +80,8 @@ export class TerritoryScene extends Phaser.Scene {
     const npcContainer = this.add.container(npcX, npcY);
     const npcAura = this.add.circle(0, 0, 28, cfg.accentNum, 0.18);
     const npcBody = this.add.circle(0, 0, 18, 0x1e293b, 1).setStrokeStyle(2.5, 0xfbbf24, 0.9);
-    const npcIcon = this.add.text(0, 0, "NPC", { fontFamily: "Chakra Petch", fontSize: "12px", fontStyle: "bold", color: "#FBBF24" }).setOrigin(0.5);
-    const npcLabel = this.add.text(0, 32, cfg.npc.name, { fontFamily: "Chakra Petch", fontSize: "14px", color: "#F1F5F9" }).setOrigin(0.5);
+    const npcIcon = this.add.text(0, 0, "NPC", { fontFamily: "Roboto, sans-serif", fontSize: "12px", fontStyle: "bold", color: "#FBBF24" }).setOrigin(0.5);
+    const npcLabel = this.add.text(0, 32, cfg.npc.name, { fontFamily: "Roboto, sans-serif", fontSize: "14px", color: "#F1F5F9" }).setOrigin(0.5);
     npcContainer.add([npcAura, npcBody, npcIcon, npcLabel]);
     npcContainer.setSize(64, 64).setInteractive({ useHandCursor: true });
     this.tweens.add({ targets: npcBody, y: -4, duration: 1400, yoyo: true, repeat: -1 });
@@ -109,7 +109,7 @@ export class TerritoryScene extends Phaser.Scene {
 
       const glyph = st.kind === "boss" ? "⚔" : st.kind === "tutorial" ? "?" : done ? "✓" : "◆";
       const txt = this.add.text(0, 0, glyph, {
-        fontFamily: "Chakra Petch, sans-serif",
+        fontFamily: "Roboto, sans-serif",
         fontSize: st.kind === "boss" ? "20px" : "16px",
         color: done ? "#22C55E" : "#F8FAFC",
       }).setOrigin(0.5);
@@ -170,7 +170,7 @@ export class TerritoryScene extends Phaser.Scene {
     if (cfg.sideQuest) {
       const sq = this.add.container(cfg.sideQuest.x, cfg.sideQuest.y);
       const ring = this.add.circle(0, 0, 22, 0xa78bfa, 0.2).setStrokeStyle(2, 0xa78bfa, 0.9);
-      const ico = this.add.text(0, 0, "◈", { fontFamily: "Chakra Petch", fontSize: "16px", color: "#C4B5FD" }).setOrigin(0.5);
+      const ico = this.add.text(0, 0, "◈", { fontFamily: "Roboto, sans-serif", fontSize: "16px", color: "#C4B5FD" }).setOrigin(0.5);
       const tag = this.add.text(0, 30, cfg.sideQuest.label, { fontFamily: "Roboto", fontSize: "14px", color: "#DDD6FE", backgroundColor: "#0B132B", padding: { x: 7, y: 3 } }).setOrigin(0.5);
       sq.add([ring, ico, tag]).setSize(60, 60).setInteractive({ useHandCursor: true });
       this.registerInteractable({
@@ -191,7 +191,7 @@ export class TerritoryScene extends Phaser.Scene {
     const visor = this.add.rectangle(4, -3, 14, 7, this.snapshot.visorHex || 0x38bdf8, 1);
     const pName = this.add
       .text(0, -30, this.snapshot.alias || "Explorer", {
-        fontFamily: "Chakra Petch, sans-serif",
+        fontFamily: "Roboto, sans-serif",
         fontSize: "14px",
         color: "#F8FAFC",
         backgroundColor: "#0B132B",
@@ -212,7 +212,7 @@ export class TerritoryScene extends Phaser.Scene {
     // Contextual world interaction prompt
     this.promptHint = this.add
       .text(190, 310, "", {
-        fontFamily: "Chakra Petch, sans-serif",
+        fontFamily: "Roboto, sans-serif",
         fontSize: "15px",
         fontStyle: "bold",
         color: "#06211E",

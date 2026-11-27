@@ -68,7 +68,7 @@ export class WorldMapScene extends Phaser.Scene {
 
       const badgeText = this.add
         .text(0, 0, restored ? "★" : unlocked ? String(world.order) : "🔒", {
-          fontFamily: "Chakra Petch, sans-serif",
+          fontFamily: "Roboto, sans-serif",
           fontSize: restored ? "20px" : "16px",
           color: restored ? "#FBBF24" : unlocked ? "#F1F5F9" : "#94A3B8",
         })
@@ -78,7 +78,7 @@ export class WorldMapScene extends Phaser.Scene {
       labelBg.setStrokeStyle(1, unlocked ? world.accentNum : 0x334155, 0.7);
       const label = this.add
         .text(0, 44, world.name, {
-          fontFamily: "Chakra Petch, sans-serif",
+          fontFamily: "Roboto, sans-serif",
           fontSize: "15px",
           fontStyle: "bold",
           color: unlocked ? "#F1F5F9" : "#94A3B8",

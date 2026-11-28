@@ -7,7 +7,7 @@ Players explore six interconnected AI territories, learn practical prompting, fa
 ## Tech Stack
 - **Frontend & Game Engine**: React 19, Phaser 3, React Router v7, Tailwind CSS v4, Recharts, Web Audio API, Browser Speech Synthesis.
 - **Backend & Real-Time**: Node.js, Express 5, PostgreSQL (`pg`), JWT + `bcryptjs` + CSRF protection, Socket.IO, Zod.
-- **External AI**: Groq API (Llama 3.3 + Whisper STT) & Google Gemini Vision API (optional; Simulation Mode works offline when unconfigured).
+- **External AI**: Groq API (Llama 3.1 + Whisper STT) & Google Gemini Vision API (optional; Simulation Mode works offline when unconfigured).
 - **Testing & Deployment**: Vitest, Node Test Runner, Playwright, Docker Compose + Nginx.
 
 ## Quick Start (Local)
@@ -18,7 +18,7 @@ npm --prefix client install
 npm --prefix server install
 ```
 2. Optional: configure `.env` using `.env.example` and see [`DATABASE_SETUP.md`](DATABASE_SETUP.md) & [`API_SETUP.md`](API_SETUP.md).
-3. Start client + server together:
+3. Start client + server together (use `npm.cmd run dev` in Windows PowerShell):
 ```bash
 npm run dev
 ```
@@ -30,3 +30,12 @@ npm run dev
 npm test
 npm run build
 ```
+
+## Documentation
+- [System Architecture](docs/ARCHITECTURE.md)
+- [Game Design & AEI Mechanics](docs/GAME_DESIGN.md)
+- [API & Socket.IO Reference](docs/API_REFERENCE.md)
+- [PostgreSQL Database Guide](docs/DATABASE.md)
+- [Local & Docker Deployment](docs/DEPLOYMENT.md)
+- [Testing & Verification Guide](docs/TESTING.md)
+- [Implementation Status](IMPLEMENTATION_STATUS.md)
